@@ -1,12 +1,4 @@
-# This file will contain a class that can be inherited from to create an encoding module - pass data to it and it will return the encoded version of that data.
+# To create a new encoder, create a new file named yourEncoderName.py that has the following functions:
 
-import time
-
-def send(data):
-    for _ in range(3):
-        print("Simulating sending data...")
-        time.sleep(1)
-    return
-
-def receive():
-    return "there would be some data here"
+def encode(data):
+    return "here's your encoded data back: {}".format(data)

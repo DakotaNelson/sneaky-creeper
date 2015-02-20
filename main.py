@@ -11,7 +11,18 @@ enc = importlib.import_module(moduleName)
 # This is a programmatic equivalent of:
 # from encoding import exampleEncoder as enc
 
-enc.send("some data")
+ret = enc.encode('this is my data')
+print(ret)
 
-ret = enc.receive()
+
+# to use a channel:
+channelName = 'exampleChannel'
+moduleName = '.'.join(['channels', channelName])
+chan = importlib.import_module(moduleName)
+
+# send some stuff
+chan.send("some data")
+
+# receive some stuff
+ret = chan.receive()
 print(ret)
