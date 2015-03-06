@@ -3,24 +3,24 @@
 # OR  Take and process command line args -> use transmit module's retrieve method to grab data -> write out data
 
 # command line arguments:
-# you can input multiple transfer arguments, so -transfer and encoder will give a 
+# you can input multiple transfer arguments, so -transfer and encoder will give a
 # list of arguments. Need to change use encoder and use channel to loop
 import argparse
 parser = argparse.ArgumentParser(description = 'Use social media as a tool\
-								 for data exfiltration.', epilog = "Aw yee.")
+                                 for data exfiltration.', epilog = "Aw yee.")
 parser.add_argument('-transfer', '-t', dest = 'channelName', action = 'append',
-							 help = 'Choose location to transfer to \
-							 (e.g, -transfer twitter). Channels that are supported:\
-							  twitter (not really yet)', required = False) #change to True when done
+                             help = 'Choose location to transfer to \
+                             (e.g, -transfer twitter). Channels that are supported:\
+                              twitter (not really yet)', required = False) #change to True when done
 parser.add_argument('-encode', '-e', dest = 'encoderName', action = 'append',
-							 help = 'Choose methods of encoding (done in order given).\
-							  Current methods: none :-(', required = False) #change to True when done
+                             help = 'Choose methods of encoding (done in order given).\
+                              Current methods: none :-(', required = False) #change to True when done
 args = parser.parse_args()
 d =  vars(args)
 if d.get('channelName', -1) != -1: #if arguement is put in
-	channelName = d['channelName']
+    channelName = d['channelName']
 if d.get('encoderName', -1) != -1:
-	encoderName = d['encoderName']
+    encoderName = d['encoderName']
 
 print channelName, encoderName
 
