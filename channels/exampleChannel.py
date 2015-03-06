@@ -2,11 +2,11 @@
 
 import time
 
-def send(data):
+def send(data, params):
     for _ in range(3):
         print("Simulating sending data...")
         time.sleep(1)
     return
 
-def receive():
+def receive(params):
     return "there would be some data here"

@@ -31,6 +31,8 @@ print("")
 
 import importlib
 
+params = {} # eventually this will be command line params
+
 # TODO read in data from stdin or a file
 data = 'this is my data'
 for encoderName in encoderNames:
@@ -39,7 +41,7 @@ for encoderName in encoderNames:
     # This is a programmatic equivalent of:
     # from encoding import exampleEncoder as enc
 
-    data = enc.encode(data)
+    data = enc.encode(data, params)
 
 print(data)
 
@@ -48,8 +50,8 @@ moduleName = '.'.join(['channels', channelName])
 chan = importlib.import_module(moduleName)
 
 # send some stuff
-chan.send(data)
+chan.send(data, params)
 
 # receive some stuff
-resp = chan.receive()
+resp = chan.receive(params)
 print(resp)
