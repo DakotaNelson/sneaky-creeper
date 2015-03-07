@@ -22,11 +22,14 @@ parser.add_argument('--channel', '-c', dest = 'channelName', metavar="channel_na
 parser.add_argument('--encode', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
                              help = 'Choose one or more methods of encoding (done in order given).\
                              Encoders available: ' + ", ".join(encodingOptions), required = True)
+parser.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
+                             metavar = 'filename', type = argparse.FileType('r'), default = '-')
 
 args = parser.parse_args()
 d =  vars(args)
 channelName = d.get('channelName')
 encoderNames = d.get('encoderNames')
+data = d.get('input').read() # either a given file, or stdin
 
 # ensure the passed modules are valid
 if not channelName in channelOptions:
@@ -46,8 +49,8 @@ print("")
 # TODO set up command line params to pass to modules
 params = {} # eventually this will be command line params
 
-# TODO read in data from stdin or a file
-data = 'this is my data'
+# TODO read from files with command line arg?
+#data = sys.stdin.read()
 for encoderName in encoderNames:
     moduleName = '.'.join(['encoders', encoderName])
     enc = importlib.import_module(moduleName)
@@ -66,7 +69,6 @@ chan = importlib.import_module(moduleName)
 chan.send(data, params)
 
 # TODO command line args for separate send and receive modes
-# TODO write out received data to a file or stdout
 # receive some stuff
 resp = chan.receive(params)
-print(resp)
+sys.stdout.write(str(resp))
