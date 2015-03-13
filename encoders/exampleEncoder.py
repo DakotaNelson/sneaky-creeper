@@ -2,6 +2,7 @@
 import inspect
 
 def encode(data, params):
+    print('Foo: ' + params['foo']) # test the 'foo' param defined below
     return "here's your encoded data back: {}".format(data)
 
 def decode(data, params):
@@ -13,7 +14,7 @@ def args():
             "foo": "this can be anything, it's not actually used"
            }
     # when an arg is defined here, it can be accesed in the functions above
-    # as params[arg]
+    # as 'params[arg]'
 
     # sort of hacky way to make this class-like
     return args
