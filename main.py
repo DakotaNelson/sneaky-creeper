@@ -5,6 +5,7 @@
 import sys
 import importlib
 import argparse
+#import inspect
 
 # get list of available modules
 # TODO make this detect modules instaed of being manual
@@ -47,7 +48,7 @@ print("Pipeline: " + "-> ".join(encoderNames) + "-> " + channelName)
 print("")
 
 # TODO set up command line params to pass to modules
-params = {} # eventually this will be command line params
+params = {'foo':'bar'} # eventually this will be command line params
 
 # TODO read from files with command line arg?
 #data = sys.stdin.read()
@@ -56,6 +57,17 @@ for encoderName in encoderNames:
     enc = importlib.import_module(moduleName)
     # This is a programmatic equivalent of:
     # from encoding import exampleEncoder as enc
+
+    #required_args = inspect.getargspec(enc.encode)[0]
+    #print(required_args)
+    # this gives us the names of all the required arguments for the module
+
+    args = enc.args()
+    # make sure all required arguments are available
+    for arg in args:
+        if arg not in params:
+            print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
+            sys.exit()
 
     data = enc.encode(data, params)
 
