@@ -15,15 +15,15 @@ def main():
     #except TwythonError as e:
     #    print(e)
 
-    tweets = []
-    for x in user_timeline:
-        if 'text' in x:
-            tweets.append(x['text'])
+    # tweets = []
+    # for x in user_timeline:
+    #     if 'text' in x:
+    #         tweets.append(x['text'])
 
-    print (tweets)
+    # print (tweets)
 
-    twitter.update_status(status='See how easy using Twython is!')
-
+    #twitter.update_status(status='See how easy using Twython is!')
+    twitter.update_status(status= input( 'Tweet: '))
 
 if __name__ == "__main__":
 	main()
