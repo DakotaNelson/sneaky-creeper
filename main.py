@@ -9,7 +9,7 @@ import argparse
 
 # get list of available modules
 # TODO make this detect modules instaed of being manual
-channelOptions = ['twitter', 'exampleChannel']
+channelOptions = ['twythonChannel', 'exampleChannel']
 encodingOptions = ['b64', 'exampleEncoder']
 
 # command line arguments:
@@ -90,13 +90,13 @@ def encode(encoderNames, data, params):
         #print(required_args)
         # this gives us the names of all the required arguments for the module
 
-        args = enc.args()
+        #args = enc.args()
         # make sure all required arguments are available
-        for arg in args:
-            if arg not in params:
-                print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
-                print("Arg description: {}".format(args[arg]))
-                return
+        # for arg in args:
+        #     if arg not in params:
+        #         print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
+        #         print("Arg description: {}".format(args[arg]))
+        #         return
 
         data = enc.encode(data, params)
 
