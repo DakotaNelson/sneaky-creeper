@@ -9,7 +9,7 @@ import argparse
 
 # get list of available modules
 # TODO make this detect modules instaed of being manual
-channelOptions = ['twythonChannel', 'exampleChannel']
+channelOptions = ['twitter', 'exampleChannel']
 encodingOptions = ['b64', 'exampleEncoder']
 
 # command line arguments:
