@@ -51,15 +51,14 @@ parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="e
 
 ######### END ARG PARSER #########
 
-def receiveData(channelName, encoderNames, params):
+def receiveData(channelName, params):
     # to use a channel:
     moduleName = '.'.join(['channels', channelName])
     chan = importlib.import_module(moduleName)
 
     # receive some stuff
     resp = chan.receive(params)
-    sys.stdout.write(str(resp))
-    return
+    return resp
 
 def sendData(channelName, data, params):
     # ensure the passed modules are valid
@@ -76,10 +75,7 @@ def sendData(channelName, data, params):
 
 def encode(encoderNames, data, params):
     # encode some data by passing it through the given encoders
-    for encoderName in encoderNames:
-        if not encoderName in encodingOptions:
-            print("ERROR: encoder " + encoderName + " does not exist.")
-            return
+    # encoders are ASSUMED GOOD
     for encoderName in encoderNames:
         moduleName = '.'.join(['encoders', encoderName])
         enc = importlib.import_module(moduleName)
@@ -90,24 +86,43 @@ def encode(encoderNames, data, params):
         #print(required_args)
         # this gives us the names of all the required arguments for the module
 
-        args = enc.args()
+        #args = enc.args()
         # make sure all required arguments are available
-        for arg in args:
-            if arg not in params:
-                print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
-                print("Arg description: {}".format(args[arg]))
-                return
+        # for arg in args:
+        #     if arg not in params:
+        #         print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
+        #         print("Arg description: {}".format(args[arg]))
+        #         return
 
         data = enc.encode(data, params)
 
-    print(data)
-    return
+    return data
 
 def decode(encoderNames, data):
     # decode some data by passing it through the given encoders, in reverse
     # i.e. [enc1, enc2] means data is decoded by enc2, then enc1
     # This allows decoders to be specified in the same order on both ends, and still work.
-    return
+    for encoderName in reversed(encoderNames):
+        moduleName = '.'.join(['encoders', encoderName])
+        enc = importlib.import_module(moduleName)
+        # This is a programmatic equivalent of:
+        # from encoding import exampleEncoder as enc
+
+        #required_args = inspect.getargspec(enc.encode)[0]
+        #print(required_args)
+        # this gives us the names of all the required arguments for the module
+
+        '''args = enc.args()
+        # make sure all required arguments are available
+        for arg in args:
+            if arg not in params:
+                print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
+                print("Arg description: {}".format(args[arg]))
+                return'''
+
+        data = enc.decode(data, params)
+
+    return data
 
 def encoders():
     # Do everything to handle the 'encoders' subcommand.
@@ -132,6 +147,12 @@ if args.subcommand == 'send':
     encoderNames = d.get('encoderNames')
     data = d.get('input').read() # either a given file, or stdin
 
+    # check the encoders all exist
+    for encoderName in encoderNames:
+        if not encoderName in encodingOptions:
+            print("ERROR: encoder " + encoderName + " does not exist. Exiting.")
+            sys.exit()
+
     # tell the user what we're going to do
     print("")
     print("Pipeline: " + "-> ".join(encoderNames) + "-> " + channelName)
@@ -140,8 +161,8 @@ if args.subcommand == 'send':
     # TODO set up command line params to pass to modules
     params = {'foo':'bar'} # eventually this will be command line params
 
-    encode(encoderNames, data, params)
-    sendData(channelName, data, params)
+    encoded = encode(encoderNames, data, params)
+    sendData(channelName, encoded, params)
 
 if args.subcommand == 'receive':
     channelName = d.get('channelName')
@@ -150,5 +171,6 @@ if args.subcommand == 'receive':
     # TODO set up command line params to pass to modules
     params = {'foo':'bar'} # eventually this will be command line params
 
-    receiveData(channelName, params)
-    decode(encoderNames, data)
+    data = receiveData(channelName, params)
+    output = decode(encoderNames, data)
+    sys.stdout.write(str(output))
