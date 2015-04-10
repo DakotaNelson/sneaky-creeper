@@ -66,6 +66,15 @@ def receiveData(channelName, params):
     moduleName = '.'.join(['channels', channelName])
     chan = importlib.import_module(moduleName)
 
+    # make sure we have all of the required parameters
+    abort = False
+    for param,desc in chan.requiredParams['sending'].iteritems():
+        if not param in params:
+            print("ERROR: Missing required parameter \'{}\'.".format(param))
+            abort = True # so that multiple problems can be found in one run
+    if(abort):
+        sys.exit()
+
     # receive some stuff
     resp = chan.receive(params)
     return resp
@@ -79,6 +88,15 @@ def sendData(channelName, data, params):
     # to use a channel:
     moduleName = '.'.join(['channels', channelName])
     chan = importlib.import_module(moduleName)
+
+    # make sure we have all of the required parameters
+    abort = False
+    for param,desc in chan.requiredParams['sending'].iteritems():
+        if not param in params:
+            print("ERROR: Missing required parameter \'{}\'.".format(param))
+            abort = True # so that multiple problems can be found in one run
+    if(abort):
+        sys.exit()
 
     # send some stuff
     chan.send(data, params)

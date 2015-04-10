@@ -1,6 +1,23 @@
 from twython import Twython, TwythonError
 import time
 
+# TODO add optional params?
+requiredParams = {
+    'sending': {
+       'app_key':'Application key for Twitter API.',
+       'app_secret': 'Application secret for Twitter API.',
+       'oauth_token': 'OAuth token for Twitter API.',
+       'oauth_token_secret': 'OAuth token secret for Twitter API.',
+       'screen_name': 'Screen name of Twitter account to post data to.'
+               },
+    'receiving': {
+       'app_key':'Application key for Twitter API.',
+       'app_secret': 'Application secret for Twitter API.',
+       'oauth_token': 'OAuth token for Twitter API.',
+       'oauth_token_secret': 'OAuth token secret for Twitter API.',
+       'screen_name': 'Screen name of Twitter account to post data to.'
+                 }
+    }
 
 def send(data, params):
     APP_KEY = params['app_key']
