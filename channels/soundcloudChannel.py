@@ -1,49 +1,52 @@
-import pyaudio
+import random
+import struct
 import wave
-import numpy as np
+import soundcloud
+import os, re, urllib
 
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
-RATE = 44100
-RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "output.wav"
+client = soundcloud.Client(
+    client_id=os.environ.get('SOUNDCLOUD_ID'),
+    client_secret=os.environ.get('SOUNDCLOUD_Secret'),
+    username=os.environ.get('SOUNDCLOUD_GMAIL'),
+    password=os.environ.get('SOUNDCLOUD_PASS')
+)
 
-p = pyaudio.PyAudio()
+SONG_NAME = 'test'
 
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
+def send(data, params):
+    SAMPLE_LEN = 10000
 
-print("* recording")
+    frames = []
+    '''
+    for i in range(0, SAMPLE_LEN):
+            value = random.randint(-32767, 32767)
+            frames.append(struct.pack('h',value))
+    '''
+    f = open('test.txt','r')
+    for i in f:
+        frames.append(i)
 
-frames = []
+    wf = wave.open('output.wav', 'wb')
+    wf.setnchannels(1)
+    wf.setframerate(44100)
+    wf.setsampwidth(2)
+    wf.writeframes(b''.join(frames))
+    wf.close()
 
-for i in xrange(100): #range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    try:
-        data = stream.read(CHUNK)
-        frames.append(data)
-    except: pass
+    print "Done creating sound file"
+    track = client.post('/tracks', track={
+        'title': SONG_NAME,
+        'sharing':'public',
+        'asset_data': open('output.wav','rb'),
+        'tag_list':'tag1 \"hip hop\"',
+        'downloadable': True })
+    print "Done uploading"
 
+    return
 
-#print("* done recording")
-c = np.fromstring(frames[0], dtype=np.int16)
-#print c
-#print c.tobytes()
+def receive(params):
+    urllib.urlretrieve("http://soundcloud.com/user255215947/" +SONG_NAME+ "/download", 'file.wav')
 
-
-stream.stop_stream()
-stream.close()
-p.terminate()
-print p.get_sample_size(FORMAT)
-
-'''
-wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-wf.setnchannels(CHANNELS)
-wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(RATE)
-wf.writeframes(b''.join(frames))
-wf.close()
-'''
+if __name__ == "__main__":
+    send(1,1)
+    #receive(1)
