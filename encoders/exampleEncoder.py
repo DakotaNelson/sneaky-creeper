@@ -4,10 +4,9 @@ import inspect
 # TODO add optional params?
 requiredParams = {
     'encode': {
-        {'foo':'A random variable defined here for example purposes.'}
+        'foo':'A random variable defined here for example purposes.'
                },
     'decode': {
-        #{'param_name': 'Short description of the parameter.}
                  }
     }
 

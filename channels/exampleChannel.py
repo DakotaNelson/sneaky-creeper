@@ -4,10 +4,10 @@ import time
 
 requiredParams = {
     'sending': {
-        # {'param_name', 'Brief description of the parameter."}
+        # 'param_name', 'Brief description of the parameter."
                },
     'receiving': {
-        # {'param_name', 'Brief description of the parameter."}
+        # 'param_name', 'Brief description of the parameter."
                  }
     }
 
