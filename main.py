@@ -68,7 +68,7 @@ def receiveData(channelName, params):
 
     # make sure we have all of the required parameters
     abort = False
-    for param,desc in chan.requiredParams['sending'].iteritems():
+    for param,desc in chan.requiredParams['receiving'].iteritems():
         if not param in params:
             print("ERROR: Missing required parameter \'{}\'.".format(param))
             abort = True # so that multiple problems can be found in one run
@@ -110,17 +110,14 @@ def encode(encoderNames, data, params):
         # This is a programmatic equivalent of:
         # from encoding import exampleEncoder as enc
 
-        #required_args = inspect.getargspec(enc.encode)[0]
-        #print(required_args)
-        # this gives us the names of all the required arguments for the module
-
-        #args = enc.args()
-        # make sure all required arguments are available
-        # for arg in args:
-        #     if arg not in params:
-        #         print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
-        #         print("Arg description: {}".format(args[arg]))
-        #         return
+        # make sure we have all of the required parameters
+        abort = False
+        for param,desc in enc.requiredParams['encode'].iteritems():
+            if not param in params:
+                print("ERROR: Missing required parameter \'{}\'.".format(param))
+                abort = True # so that multiple problems can be found in one run
+        if(abort):
+            sys.exit()
 
         data = enc.encode(data, params)
 
@@ -136,17 +133,14 @@ def decode(encoderNames, data):
         # This is a programmatic equivalent of:
         # from encoding import exampleEncoder as enc
 
-        #required_args = inspect.getargspec(enc.encode)[0]
-        #print(required_args)
-        # this gives us the names of all the required arguments for the module
-
-        '''args = enc.args()
-        # make sure all required arguments are available
-        for arg in args:
-            if arg not in params:
-                print("ERROR: argument {} is required for module {}.".format(arg, encoderName))
-                print("Arg description: {}".format(args[arg]))
-                return'''
+        # make sure we have all of the required parameters
+        abort = False
+        for param,desc in enc.requiredParams['decode'].iteritems():
+            if not param in params:
+                print("ERROR: Missing required parameter \'{}\'.".format(param))
+                abort = True # so that multiple problems can be found in one run
+        if(abort):
+            sys.exit()
 
         data = enc.decode(data, params)
 
