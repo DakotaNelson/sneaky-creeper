@@ -2,15 +2,25 @@
 # Take and process command line args -> read in data -> encode data (potentially multiple times) -> transmit data
 # OR  Take and process command line args -> use transmit module's retrieve method to grab data -> write out data
 
+import os
+import pkgutil
 import sys
 import importlib
 import argparse
-#import inspect
 
-# get list of available modules
-# TODO make this detect modules instaed of being manual
-channelOptions = ['twitter', 'exampleChannel']
-encodingOptions = ['b64', 'exampleEncoder']
+# get all of the possible channels and encoders to load and use
+
+# generate paths to the encoder and channel folders
+currentDir = os.path.dirname(os.path.abspath(__file__))
+channels = os.path.join(currentDir, 'channels')
+encoders = os.path.join(currentDir, 'encoders')
+
+channels = pkgutil.iter_modules(path=[channels])
+encoders = pkgutil.iter_modules(path=[encoders])
+
+# these are all of the modules available to be loaded and used
+channelOptions = [modName for _,modName,_ in channels]
+encodingOptions = [modName for _,modName,_ in encoders]
 
 # command line arguments:
 # you can input multiple transfer arguments, so -transfer and encoder will give a
@@ -126,10 +136,14 @@ def decode(encoderNames, data):
 
 def encoders():
     # Do everything to handle the 'encoders' subcommand.
+    print("Currently available encoders:")
+    print('    ' + ', '.join(encodingOptions))
     return
 
 def channels():
     # Do everything to handle the 'channels' subcommand.
+    print("Currently available channels:")
+    print('    ' + ', '.join(channelOptions))
     return
 
 ############## RUN ##############
