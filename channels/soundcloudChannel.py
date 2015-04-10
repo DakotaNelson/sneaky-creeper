@@ -42,6 +42,7 @@ def send(data, params):
         'downloadable': True })
     print "Done uploading"
 
+    os.remove('output.wav')
     return
 
 def receive(params):
