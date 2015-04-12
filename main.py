@@ -47,7 +47,7 @@ parser_send.add_argument('--input', '-i', help = 'Specify a file to read from, o
                              metavar = 'filename', type = argparse.FileType('r'), default = '-')
 
 parser_send.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
-                             help = 'Specify parameters to be passed to encoder and channel modules.')
+                             help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
 
 
 # subparser for fetching data
@@ -60,7 +60,7 @@ parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="e
                              help = 'Choose one or more methods of encoding (done in order given).', required=True)
 
 parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
-                             help = 'Specify parameters to be passed to encoder and channel modules.')
+                             help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
 
 ######### END ARG PARSER #########
 
