@@ -70,7 +70,7 @@ def receiveData(channelName, params):
     abort = False
     for param,desc in chan.requiredParams['receiving'].iteritems():
         if not param in params:
-            print("ERROR: Missing required parameter \'{}\'.".format(param))
+            print("ERROR: Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
             abort = True # so that multiple problems can be found in one run
     if(abort):
         sys.exit()
@@ -93,7 +93,7 @@ def sendData(channelName, data, params):
     abort = False
     for param,desc in chan.requiredParams['sending'].iteritems():
         if not param in params:
-            print("ERROR: Missing required parameter \'{}\'.".format(param))
+            print("ERROR: Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
             abort = True # so that multiple problems can be found in one run
     if(abort):
         sys.exit()
@@ -114,7 +114,7 @@ def encode(encoderNames, data, params):
         abort = False
         for param,desc in enc.requiredParams['encode'].iteritems():
             if not param in params:
-                print("ERROR: Missing required parameter \'{}\'.".format(param))
+                print("ERROR: Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
                 abort = True # so that multiple problems can be found in one run
         if(abort):
             sys.exit()
@@ -137,7 +137,7 @@ def decode(encoderNames, data):
         abort = False
         for param,desc in enc.requiredParams['decode'].iteritems():
             if not param in params:
-                print("ERROR: Missing required parameter \'{}\'.".format(param))
+                print("ERROR: Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
                 abort = True # so that multiple problems can be found in one run
         if(abort):
             sys.exit()
