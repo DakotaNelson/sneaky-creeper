@@ -1,8 +1,25 @@
-#This module written by Gabriel Butterick and Bonnie Ishiguro 
+#This module written by Gabriel Butterick and Bonnie Ishiguro
 
 from twython import Twython, TwythonError
 import time
 
+# TODO add optional params?
+requiredParams = {
+    'sending': {
+       'key':'Application key for Twitter API.',
+       'secret': 'Application secret for Twitter API.',
+       'token': 'OAuth token for Twitter API.',
+       'tsecret': 'OAuth token secret for Twitter API.',
+       'name': 'Screen name of Twitter account to post data to.'
+               },
+    'receiving': {
+       'key':'Application key for Twitter API.',
+       'secret': 'Application secret for Twitter API.',
+       'token': 'OAuth token for Twitter API.',
+       'tsecret': 'OAuth token secret for Twitter API.',
+       'name': 'Screen name of Twitter account to post data to.'
+                 }
+    }
 
 
 def send(data, params):
@@ -15,7 +32,6 @@ def send(data, params):
     twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
     user_timeline = twitter.get_user_timeline(screen_name=SCREEN_NAME)
     twitter.update_status(status= data)
-    print "Sending Complete"
     return
 
 def receive(params):
