@@ -1,7 +1,3 @@
-# This file will pull everything together:
-# Take and process command line args -> read in data -> encode data (potentially multiple times) -> transmit data
-# OR  Take and process command line args -> use transmit module's retrieve method to grab data -> write out data
-
 import os
 import pkgutil
 import sys
@@ -50,6 +46,10 @@ parser_send.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="enco
 parser_send.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
                              metavar = 'filename', type = argparse.FileType('r'), default = '-')
 
+parser_send.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
+                             help = 'Specify parameters to be passed to encoder and channel modules.')
+
+
 # subparser for fetching data
 parser_receive = subparsers.add_parser('receive')
 parser_receive.add_argument('--channel', '-c', dest = 'channelName', metavar="channel_name", action = 'store',
@@ -58,6 +58,9 @@ parser_receive.add_argument('--channel', '-c', dest = 'channelName', metavar="ch
 
 parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
                              help = 'Choose one or more methods of encoding (done in order given).', required=True)
+
+parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
+                             help = 'Specify parameters to be passed to encoder and channel modules.')
 
 ######### END ARG PARSER #########
 
@@ -171,7 +174,14 @@ if args.subcommand == 'channels':
 if args.subcommand == 'send':
     channelName = d.get('channelName')
     encoderNames = d.get('encoderNames')
+    params = d.get('params')
     data = d.get('input').read() # either a given file, or stdin
+
+    #write a for loop that adds the params to a dictionary called params, then delete the foo bar dict
+    paramd = {}
+    if params:
+        for param in range(len(params)):
+            paramd[params[param][0]] = params[param][1]
 
     # check the encoders all exist
     for encoderName in encoderNames:
@@ -179,24 +189,48 @@ if args.subcommand == 'send':
             print("ERROR: encoder " + encoderName + " does not exist. Exiting.")
             sys.exit()
 
+    # check the channel exists
+    if not channelName in channelOptions:
+        print("ERROR: channel " + channelName + " does not exist. Exiting.")
+        sys.exit()
+
     # tell the user what we're going to do
     print("")
     print("Pipeline: " + "-> ".join(encoderNames) + "-> " + channelName)
     print("")
 
-    # TODO set up command line params to pass to modules
-    params = {'foo':'bar'} # eventually this will be command line params
 
-    encoded = encode(encoderNames, data, params)
-    sendData(channelName, encoded, params)
+    encoded = encode(encoderNames, data, paramd)
+    sendData(channelName, encoded, paramd)
 
 if args.subcommand == 'receive':
     channelName = d.get('channelName')
     encoderNames = d.get('encoderNames')
+    params = d.get('params')
 
-    # TODO set up command line params to pass to modules
-    params = {'foo':'bar'} # eventually this will be command line params
+    paramd = {}
+    if params:
+        for param in range(len(params)):
+            paramd[params[param][0]] = params[param][1]
 
-    data = receiveData(channelName, params)
-    output = decode(encoderNames, data)
+    # check the encoders all exist
+    for encoderName in encoderNames:
+        if not encoderName in encodingOptions:
+            print("ERROR: encoder " + encoderName + " does not exist. Exiting.")
+            sys.exit()
+
+    # check the channel exists
+    if not channelName in channelOptions:
+        print("ERROR: channel " + channelName + " does not exist. Exiting.")
+        sys.exit()
+
+    data = receiveData(channelName, paramd)
+
+    #this will be useful code later when we have multiple messages to decode
+
+    #for datam in range(len(data)):
+    #    datar = str(data[datam])
+    #    output = decode(encoderNames, datar)
+
+    output = decode(encoderNames, str(data[0]))
     sys.stdout.write(str(output))
