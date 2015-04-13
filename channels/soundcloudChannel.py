@@ -11,7 +11,7 @@ client = soundcloud.Client(
     password=os.environ.get('SOUNDCLOUD_PASS')
 )
 
-SONG_NAME = 'test'
+SONG_NAME = 'FinalTESTING'
 
 def send(data, params):
     SAMPLE_LEN = 10000
@@ -39,13 +39,16 @@ def send(data, params):
         'sharing':'public',
         'asset_data': open('output.wav','rb'),
         'tag_list':'tag1 \"hip hop\"',
-        'downloadable': True })
+        'downloadable': 'true' })
     print "Done uploading"
-    os.remove('output.wav')
+
+    #TODO: Remove this comment
+    #os.remove('output.wav')
 
     return
 
 def receive(params):
+    #TODO: Make this work
     urllib.urlretrieve("http://soundcloud.com/user255215947/" +SONG_NAME+ "/download", 'file.wav')
     wf = wave.open('file.wav', 'r')
     print wf.readframes(100)
