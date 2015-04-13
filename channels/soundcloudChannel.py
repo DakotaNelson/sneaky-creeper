@@ -46,8 +46,17 @@ def send(data, params):
     return
 
 def receive(params):
-    urllib.urlretrieve("http://soundcloud.com/user255215947/" +SONG_NAME+ "/download", 'file.wav')
+    #urllib.urlretrieve("http://soundcloud.com/user255215947/" +SONG_NAME+ "/download", 'file.wav')
+    wf = wave.open('file.wav', 'r')
+    print wf.getnframes()
 
+
+    # TRYING TO OPEN IT AS A TXT FILE
+    #f = open('file.wav','r')
+    #for i in f.read():
+    #    print struct.unpack('s', i)
+    #struct.pack('c',f.read())
+    
 if __name__ == "__main__":
-    send(1,1)
-    #receive(1)
+    #send(1,1)
+    receive(1)
