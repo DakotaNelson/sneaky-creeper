@@ -41,14 +41,14 @@ def send(data, params):
         'tag_list':'tag1 \"hip hop\"',
         'downloadable': True })
     print "Done uploading"
-
     os.remove('output.wav')
+
     return
 
 def receive(params):
-    #urllib.urlretrieve("http://soundcloud.com/user255215947/" +SONG_NAME+ "/download", 'file.wav')
+    urllib.urlretrieve("http://soundcloud.com/user255215947/" +SONG_NAME+ "/download", 'file.wav')
     wf = wave.open('file.wav', 'r')
-    print wf.getnframes()
+    print wf.readframes(100)
 
 
     # TRYING TO OPEN IT AS A TXT FILE
