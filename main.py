@@ -4,12 +4,6 @@ import sys
 import importlib
 import argparse
 
-<<<<<<< HEAD
-# get list of available modules
-# TODO make this detect modules instaed of being manual
-channelOptions = ['twitter', 'googleDocs', 'exampleChannel']
-encodingOptions = ['b64', 'exampleEncoder']
-=======
 # get all of the possible channels and encoders to load and use
 
 # generate paths to the encoder and channel folders
@@ -23,7 +17,6 @@ encoders = pkgutil.iter_modules(path=[encoders])
 # these are all of the modules available to be loaded and used
 channelOptions = [modName for _,modName,_ in channels]
 encodingOptions = [modName for _,modName,_ in encoders]
->>>>>>> master
 
 # command line arguments:
 # you can input multiple transfer arguments, so -transfer and encoder will give a
