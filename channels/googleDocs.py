@@ -5,6 +5,7 @@ import gspread
 from oauth2client.client import SignedJwtAssertionCredentials
 
 def send(data, params):
+	print('PARAMS:', params)
     CLIENT_EMAIL = unicode(params['client_email'])
     PRIVATE_KEY = unicode(params['private_key'])
     GOOGLE_SPREAD = unicode(params['sheet'])
@@ -16,9 +17,11 @@ def send(data, params):
 
 	col = 'A'
 	row = 1
-	if sheet.acell(col+str(row)).value = "":
+	if not sheet.acell(col+str(row)).value:
 		row += 1
 	cell = col + str(row)
+
+	cell = 'A4'
 
 	sheet.update_acell(cell, data)
 	print "Sending Complete"
@@ -33,5 +36,5 @@ def receive(params):
 	gc = gspread.authorize(credentials)
 	sheet = gc.open(GOOGLE_SPREAD).sheet1
 
-    cell = 
+    cell = 'A1'
     return sheet.acell(cell).value
