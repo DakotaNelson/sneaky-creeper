@@ -126,7 +126,7 @@ def encode(encoderNames, data, params):
 
     return data
 
-def decode(encoderNames, data):
+def decode(encoderNames, data, params):
     # decode some data by passing it through the given encoders, in reverse
     # i.e. [enc1, enc2] means data is decoded by enc2, then enc1
     # This allows decoders to be specified in the same order on both ends, and still work.
@@ -234,3 +234,25 @@ if args.subcommand == 'receive':
 
     output = decode(encoderNames, str(data[0]))
     sys.stdout.write(str(output))
+
+if args.subcommand == 'echo':
+    encoderNames = d.get('encoderNames')
+    params = d.get('params')
+    data = d.get('input').read()  # either a given file, or stdin
+
+    paramd = {}
+    if params:
+        for param in range(len(params)):
+            paramd[params[param][0]] = params[param][1]
+
+    # check the encoders all exist
+    for encoderName in encoderNames:
+        if encoderName not in encodingOptions:
+            print("ERROR: encoder " +
+                  encoderName +
+                  " does not exist. Exiting.")
+            sys.exit()
+
+    encoded = encode(encoderNames, data, paramd)
+    decoded = decode(encoderNames, encoded, paramd)
+    print(decoded)
