@@ -62,6 +62,19 @@ parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="e
 parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
                              help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
 
+
+# subparser for echoing data
+parser_echo = subparsers.add_parser('echo')
+
+parser_echo.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
+                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
+
+parser_echo.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
+                             metavar = 'filename', type = argparse.FileType('r'), default = '-')
+
+parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
+                             help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
+
 ######### END ARG PARSER #########
 
 def receiveData(channelName, params):
@@ -234,3 +247,25 @@ if args.subcommand == 'receive':
 
     output = decode(encoderNames, str(data[0]))
     sys.stdout.write(str(output))
+
+if args.subcommand == 'echo':
+    encoderNames = d.get('encoderNames')
+    params = d.get('params')
+    data = d.get('input').read()  # either a given file, or stdin
+
+    paramd = {}
+    if params:
+        for param in range(len(params)):
+            paramd[params[param][0]] = params[param][1]
+
+    # check the encoders all exist
+    for encoderName in encoderNames:
+        if encoderName not in encodingOptions:
+            print("ERROR: encoder " +
+                  encoderName +
+                  " does not exist. Exiting.")
+            sys.exit()
+
+    encoded = encode(encoderNames, data, paramd)
+    decoded = decode(encoderNames, encoded)
+    print(decoded)
