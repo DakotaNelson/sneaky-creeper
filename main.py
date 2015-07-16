@@ -272,5 +272,6 @@ if args.subcommand == 'echo':
             sys.exit()
 
     encoded = encode(encoderNames, data, paramd)
+    print("Encoded: " + encoded)
     decoded = decode(encoderNames, encoded)
-    print(decoded)
+    print("Decoded: " + decoded)
