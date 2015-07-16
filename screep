@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import pkgutil
 import sys
@@ -250,7 +251,7 @@ if args.subcommand == 'receive':
         # the array is of individual 'packets' - i.e. metadata-wrapped bits of data
         # this allows for timestamping messages, sending large messages as multiple
         # fragments, etc.
-    output = decode(encoderNames, str(data[0]), params)
+    output = decode(encoderNames, str(data[0]), paramd)
     sys.stdout.write(str(output))
 
 if args.subcommand == 'echo':
@@ -273,5 +274,5 @@ if args.subcommand == 'echo':
 
     encoded = encode(encoderNames, data, paramd)
     print("Encoded: " + encoded)
-    decoded = decode(encoderNames, encoded)
+    decoded = decode(encoderNames, encoded, paramd)
     print("Decoded: " + decoded)
