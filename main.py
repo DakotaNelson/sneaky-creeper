@@ -250,7 +250,7 @@ if args.subcommand == 'receive':
         # the array is of individual 'packets' - i.e. metadata-wrapped bits of data
         # this allows for timestamping messages, sending large messages as multiple
         # fragments, etc.
-    output = decode(encoderNames, str(data[0]), params)
+    output = decode(encoderNames, str(data[0]), paramd)
     sys.stdout.write(str(output))
 
 if args.subcommand == 'echo':
