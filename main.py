@@ -62,6 +62,19 @@ parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="e
 parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
                              help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
 
+
+# subparser for echoing data
+parser_echo = subparsers.add_parser('echo')
+
+parser_echo.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
+                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
+
+parser_echo.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
+                             metavar = 'filename', type = argparse.FileType('r'), default = '-')
+
+parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
+                             help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
+
 ######### END ARG PARSER #########
 
 def receiveData(channelName, params):
@@ -94,7 +107,7 @@ def sendData(channelName, data, params):
 
     # make sure we have all of the required parameters
     abort = False
-    for param,desc in chan.requiredParams['sending'].iteritems():
+    for param in chan.requiredParams['sending']:
         if not param in params:
             print("ERROR: Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
             abort = True # so that multiple problems can be found in one run
@@ -115,7 +128,7 @@ def encode(encoderNames, data, params):
 
         # make sure we have all of the required parameters
         abort = False
-        for param,desc in enc.requiredParams['encode'].iteritems():
+        for param in enc.requiredParams['encode']:
             if not param in params:
                 print("ERROR: Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
                 abort = True # so that multiple problems can be found in one run
@@ -232,5 +245,33 @@ if args.subcommand == 'receive':
     #    datar = str(data[datam])
     #    output = decode(encoderNames, datar)
 
+    if not isinstance(data, list):
+        raise TypeError('Data must be returned from channel receive method as an array.')
+        # the array is of individual 'packets' - i.e. metadata-wrapped bits of data
+        # this allows for timestamping messages, sending large messages as multiple
+        # fragments, etc.
     output = decode(encoderNames, str(data[0]))
     sys.stdout.write(str(output))
+
+if args.subcommand == 'echo':
+    encoderNames = d.get('encoderNames')
+    params = d.get('params')
+    data = d.get('input').read()  # either a given file, or stdin
+
+    paramd = {}
+    if params:
+        for param in range(len(params)):
+            paramd[params[param][0]] = params[param][1]
+
+    # check the encoders all exist
+    for encoderName in encoderNames:
+        if encoderName not in encodingOptions:
+            print("ERROR: encoder " +
+                  encoderName +
+                  " does not exist. Exiting.")
+            sys.exit()
+
+    encoded = encode(encoderNames, data, paramd)
+    print("Encoded: " + encoded)
+    decoded = decode(encoderNames, encoded)
+    print("Decoded: " + decoded)
