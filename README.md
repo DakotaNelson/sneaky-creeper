@@ -43,7 +43,7 @@ Setup
 
 #### Dependencies:
 
-`sudo pip install pycrypto`
+`sudo pip install pycrypto twython`
 
 #### API Keys:
 
