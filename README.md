@@ -4,6 +4,9 @@ Using social media as a tool for data exfiltration.
 ![diagram](sneaky_creeper_diagram.png)
 
 
+Dependencies:
+
+`sudo pip install pycrypto`
 
 How to get API keys:
 
