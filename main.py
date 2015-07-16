@@ -273,5 +273,5 @@ if args.subcommand == 'echo':
 
     encoded = encode(encoderNames, data, paramd)
     print("Encoded: " + encoded)
-    decoded = decode(encoderNames, encoded)
+    decoded = decode(encoderNames, encoded, paramd)
     print("Decoded: " + decoded)
