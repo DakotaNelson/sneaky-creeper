@@ -107,7 +107,7 @@ def sendData(channelName, data, params):
 
     # make sure we have all of the required parameters
     abort = False
-    for param,desc in chan.requiredParams['sending'].iteritems():
+    for param in chan.requiredParams['sending']:
         if not param in params:
             print("ERROR: Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
             abort = True # so that multiple problems can be found in one run
@@ -128,7 +128,7 @@ def encode(encoderNames, data, params):
 
         # make sure we have all of the required parameters
         abort = False
-        for param,desc in enc.requiredParams['encode'].iteritems():
+        for param in enc.requiredParams['encode']:
             if not param in params:
                 print("ERROR: Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
                 abort = True # so that multiple problems can be found in one run
@@ -245,6 +245,11 @@ if args.subcommand == 'receive':
     #    datar = str(data[datam])
     #    output = decode(encoderNames, datar)
 
+    if not isinstance(data, list):
+        raise TypeError('Data must be returned from channel receive method as an array.')
+        # the array is of individual 'packets' - i.e. metadata-wrapped bits of data
+        # this allows for timestamping messages, sending large messages as multiple
+        # fragments, etc.
     output = decode(encoderNames, str(data[0]))
     sys.stdout.write(str(output))
 

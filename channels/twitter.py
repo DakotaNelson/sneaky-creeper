@@ -3,6 +3,8 @@
 from twython import Twython, TwythonError
 import time
 
+description = "Posts data to Twitter as a series of 140 character Tweets."
+
 # TODO add optional params?
 requiredParams = {
     'sending': {
