@@ -139,7 +139,7 @@ def encode(encoderNames, data, params):
 
     return data
 
-def decode(encoderNames, data):
+def decode(encoderNames, data, params):
     # decode some data by passing it through the given encoders, in reverse
     # i.e. [enc1, enc2] means data is decoded by enc2, then enc1
     # This allows decoders to be specified in the same order on both ends, and still work.
@@ -250,7 +250,7 @@ if args.subcommand == 'receive':
         # the array is of individual 'packets' - i.e. metadata-wrapped bits of data
         # this allows for timestamping messages, sending large messages as multiple
         # fragments, etc.
-    output = decode(encoderNames, str(data[0]))
+    output = decode(encoderNames, str(data[0]), params)
     sys.stdout.write(str(output))
 
 if args.subcommand == 'echo':
