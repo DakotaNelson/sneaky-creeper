@@ -10,30 +10,30 @@ sneaky-creeper has two base elements: **encoders** (the left column in the diagr
 
 To see what channels are available:
 
-`main.py channels`
+`./screep channels`
 
 To see what encoders are available:
 
-`main.py encoders`
+`./screep encoders`
 
 To write some data to a file in plaintext:
 
-`echo "some data" | main.py send -e identity -c file -p filename test.txt`
+`echo "some data" | ./screep send -e identity -c file -p filename test.txt`
 
 See how useful that is?
 
 To read the file back in:
 
-`main.py receive -e identity -c file -p filename test.txt`
+`./screep receive -e identity -c file -p filename test.txt`
 
 To do the same, but encrypt the file's contents with RSA:
 
-`echo "some data" | main.py send -e rsa -c file -p filename test.txt -p publicKey rsakey.pem.pub`  
-`main.py receive -e rsa -c file -p filename test.txt -p privateKey rsakey.pem`
+`echo "some data" | ./screep send -e rsa -c file -p filename test.txt -p publicKey rsakey.pem.pub`  
+`./screep receive -e rsa -c file -p filename test.txt -p privateKey rsakey.pem`
 
 To just test out the base64 encoder:
 
-`echo "some data" | main.py echo -e b64`
+`echo "some data" | ./screep echo -e b64`
 
 If you specify multiple encoders, the order is automatically reversed on decode so that you can specify them in the same order on both sides of the transmission and everything will work.
 
