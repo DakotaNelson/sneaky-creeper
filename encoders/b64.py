@@ -12,4 +12,4 @@ def encode(data, params=None):
     return base64.b64encode(data)
 
 def decode(data, params=None):
-    return base64.b64decode(data)
+    return base64.urlsafe_b64decode(data)
