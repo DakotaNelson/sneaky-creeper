@@ -26,55 +26,47 @@ parser = argparse.ArgumentParser(description = 'Use social media as a tool for d
 subparsers = parser.add_subparsers(dest='subcommand')
 
 
-# subparser for encoder exploration
-parser_encoders = subparsers.add_parser('encoders')
-#parser_encoders.add_argument()
-
-#  subparser for channel exploration
-parser_channels = subparsers.add_parser('channels')
-#parser_channels.add_argument()
-
-
-# subparser for sending data
-parser_send = subparsers.add_parser('send')
-parser_send.add_argument('--channel', '-c', dest = 'channelName', metavar="channel_name", action = 'store',
-                             help = 'Choose a channel to transfer data over \
-                             (e.g, --transfer twitter).', required = True)
-
-parser_send.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
-                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
-
-parser_send.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
-                             metavar = 'filename', type = argparse.FileType('r'), default = '-')
-
-parser_send.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
-                             help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
+# Define argument types
+channel = argparse.ArgumentParser(add_help=False)
+channel.add_argument('--channel', '-c',
+                     dest='channelName', 
+                     metavar="channel_name",
+                     action = 'store',
+                     help = 'Choose a channel to transfer data over (e.g, --transfer twitter).',
+                     required = True)
 
 
-# subparser for fetching data
-parser_receive = subparsers.add_parser('receive')
-parser_receive.add_argument('--channel', '-c', dest = 'channelName', metavar="channel_name", action = 'store',
-                             help = 'Choose a channel to transfer data over \
-                             (e.g, --transfer twitter).', required = True)
-
-parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
-                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
-
-parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
-                             help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
+encoder = argparse.ArgumentParser(add_help=False)
+encoder.add_argument('--encoder', '-e',
+                     dest='encoderNames',
+                     metavar="encoder_name", 
+                     nargs='+',
+                     action='store', 
+                     help='Choose one or more methods of encoding (done in order given).', 
+                     required=True)
 
 
-# subparser for echoing data
-parser_echo = subparsers.add_parser('echo')
+input_src = argparse.ArgumentParser(add_help=False)
+input_src.add_argument('--input', '-i', 
+                       metavar = 'filename', 
+                       type=argparse.FileType('r'), 
+                       default = '-',
+                       help='Specify a file to read from, or leave blank for stdin.')
 
-parser_echo.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
-                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
+params = argparse.ArgumentParser(add_help=False)
+params.add_argument('--parameters', '-p', 
+                         dest = 'params', 
+                         metavar="parameter_name", 
+                         nargs='+', 
+                         action = 'append',
+                         help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
 
-parser_echo.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
-                             metavar = 'filename', type = argparse.FileType('r'), default = '-')
+# Define subcommand arguments
+parser_send = subparsers.add_parser('send', parents=[channel, encoder, input_src, params])
+parser_receive = subparsers.add_parser('receive', parents=[channel, encoder, params])
+parser_echo = subparsers.add_parser('echo', parents=[encoder, input_src, params])
 
-parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", nargs='+', action = 'append',
-                             help = 'Specify parameters as name-value pairs [-p name value] to be passed to encoder and channel modules.')
+
 
 ######### END ARG PARSER #########
 
