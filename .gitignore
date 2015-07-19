@@ -2,3 +2,4 @@
 .python-version
 *.wav
 *.swp
+venv
