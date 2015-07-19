@@ -68,6 +68,7 @@ def encode(data, params=None):
     return encoded_data
 
 def decode(data, params=None):
+    data = data.split(',')
     bit_size = 8
     decoded_data = []
 
@@ -75,9 +76,9 @@ def decode(data, params=None):
     # in case encoding dataset that is bigger than
     # data size
     for i in range(len(data)/bit_size):
-        singleChar = data[i*8:8+i*8]
+        singleChar = [int(i) for i in data[i*8:8+i*8]]
         decoded_data.append(decodeChar(singleChar))
-
+    
     return ''.join(decoded_data)
 
 if __name__ == "__main__":

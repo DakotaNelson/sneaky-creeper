@@ -30,6 +30,7 @@ def send(data, params):
 
     for i in data:
         frames.append(i)
+        frames.append(',')
 
     wf = wave.open('output.wav', 'wb')
     wf.setnchannels(1)
@@ -55,10 +56,9 @@ def receive(params):
     urllib.urlretrieve("http://soundcloud.com/" + params['username'] +\
             "/" + params['song_name']+ "/download", 'file.wav')
     wf = wave.open('file.wav', 'r')
-
-    return [wf.readframes(100)]
+    data = wf.readframes(wf.getnframes())
+    return [data]
     
 if __name__ == "__main__":
-    pass
     #send(1,1)
-    #receive(1)
+    print(receive({'username':'user255215947', 'song_name':'channeltest2'}))
