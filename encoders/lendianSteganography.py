@@ -17,7 +17,7 @@ def encodeChar(char, encode_type='random'):
 
     # Convert to bits with padding to ensure 8 bit
     bits = []
-    for i in xrange(8):
+    for i in range(8):
         bits.append( char & 1 )
         char = char >> 1
 
@@ -30,7 +30,7 @@ def encodeChar(char, encode_type='random'):
             else:
                 tmp_data = tmp_data | 1
 
-            encoded_data.append(tmp_data)
+            encoded_data.append(str(tmp_data))
 
     else:
         #TODO: Is this how we are handling errors?
@@ -74,7 +74,7 @@ def decode(data, params=None):
     # This division should NOT be a float division
     # in case encoding dataset that is bigger than
     # data size
-    for i in xrange(len(data)/bit_size):
+    for i in range(len(data)/bit_size):
         singleChar = data[i*8:8+i*8]
         decoded_data.append(decodeChar(singleChar))
 
@@ -83,6 +83,6 @@ def decode(data, params=None):
 if __name__ == "__main__":
     data_set = "Hello this is a large test of the de-stegranography system"
     encoded = encode(data_set);
-    print encoded
-    print decode(encoded)
+    print(encoded)
+    print(decode(encoded))
     
