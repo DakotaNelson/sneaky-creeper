@@ -43,7 +43,7 @@ Setup
 
 #### Dependencies:
 
-`sudo pip install pycrypto twython`
+`sudo pip install pycrypto twython soundcloud`
 
 #### API Keys:
 
