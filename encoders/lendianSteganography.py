@@ -1,4 +1,6 @@
 # Lendian stegonography system
+# As of right now this can only encode the data
+#   into randomly generated integers.
 import random
 
 requiredParams = {
@@ -33,9 +35,7 @@ def encodeChar(char, encode_type='random'):
             encoded_data.append(str(tmp_data))
 
     else:
-        #TODO: Is this how we are handling errors?
-        print("No support for that encoding type yet!")
-        exit()
+        raise NotImplementedError('Please choose a different encoding type')
 
     return encoded_data
 
