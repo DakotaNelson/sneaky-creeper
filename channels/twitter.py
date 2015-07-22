@@ -32,7 +32,6 @@ def send(data, params):
     SCREEN_NAME = params['name']
 
     twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-    user_timeline = twitter.get_user_timeline(screen_name=SCREEN_NAME)
     twitter.update_status(status= data)
     return
 
