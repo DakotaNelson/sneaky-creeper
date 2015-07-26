@@ -61,3 +61,7 @@ Examine your access level for Consumer Key and Access Key and be sure they are s
 4. Generate a new access token
 
 It should now mimic the access level of the Consumer Key
+
+#####Tumblr:
+
+Make a Tumblr account and [create an app](https://www.tumblr.com/oauth/apps). Then, visit the [API console](https://api.tumblr.com/console/calls/user/info) and note down the four strings there; these are your `key`, `secret`, `token`, and `token_secret`.
