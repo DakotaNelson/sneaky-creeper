@@ -250,7 +250,6 @@ if args.subcommand == 'receive':
     output = []
     # data is an array of individual messages - decode them all one at a time
     for datum in data:
-        datum = str(datum)
         for encoderName in reversed(encoderNames):
             # go through the encoder chain in reverse to decode the data
             # This allows decoders to be specified in the same order on both ends, and still work.
