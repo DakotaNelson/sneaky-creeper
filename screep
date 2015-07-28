@@ -5,17 +5,21 @@ import sys
 import argparse
 import json
 
-from utils import importModule, venvMe
+import encoders
+import channels
 
-if not venvMe('venv'):
-    print("Unable to create virtualenv. Please manually create a virtualenv named 'venv' and retry.")
-    sys.exit()
+from utils import importModule, venvMe, wrapPath
+
+if not hasattr(sys, "_MEIPASS"):
+    # we're in a PyInstaller bundle, no venv required
+    if not venvMe('venv'):
+        print("Unable to create virtualenv. Please manually create a virtualenv named 'venv' and retry.")
+        sys.exit()
 
 # generate paths to the encoder and channel folders
 if getattr(sys, 'frozen', False):
     # we are running in a |PyInstaller| bundle
     filepath = sys._MEIPASS
-    # NOTE this is untested and might not work yet
 else:
     filepath = os.path.abspath(__file__)
 

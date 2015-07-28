@@ -2,22 +2,28 @@
 Holds utility functions for sneaky-creeper.
 '''
 
-import pip
 import importlib
 import os
 import subprocess
+import sys
 
 def importModule(moduleName, quiet=True):
     # helper function to import a module, check
     # its dependencies, install if required, then
     # return the module
+    #if getattr(sys, 'frozen', False):
     mod = importlib.import_module(moduleName)
+
+    if hasattr(sys, "_MEIPASS"):
+        # we are running in a |PyInstaller| bundle
+        # abort!
+        return mod
     # install dependencies
+    import pip
     try:
         for dep in mod.dependencies:
             if quiet:
-                pip.main(['install', dep])
-                #pip.main(['install', dep, '-q'])
+                pip.main(['install', dep, '-q'])
             else:
                 pip.main(['install', dep])
     except AttributeError:
@@ -26,13 +32,16 @@ def importModule(moduleName, quiet=True):
     return mod
 
 def venvMe(venvName):
-    # save the dir we're in
-    #origdir = os.getcwd()
-    # change to this file's directory
-    basedir = os.path.dirname(os.path.abspath(__file__))
-    #os.chdir(basedir)
+    if getattr(sys, 'frozen', False):
+        # we are running in a |PyInstaller| bundle
+        # abort!
+        return True
+        #filepath = sys._MEIPASS
+    else:
+        filepath = os.path.abspath(__file__)
+    basedir = os.path.dirname(filepath)
     # if there's a virtualenv, activate it
-    activate_this = os.path.abspath(venvName + '/bin/activate_this.py')
+    activate_this = os.path.join(basedir, venvName, 'bin', 'activate_this.py')
     if not os.path.exists(activate_this):
         # if there isn't, create one
         try:
@@ -46,3 +55,8 @@ def venvMe(venvName):
     # change back to old dir
     #os.chdir(origdir)
     return True
+
+def wrapPath(relative):
+    if getattr(sys, 'frozen', False):
+        return os.path.join(sys._MEIPASS, relative)
+    return os.path.join(relative)
