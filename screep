@@ -6,8 +6,20 @@ import importlib
 import argparse
 import json
 import pip
+import subprocess
 
-# get all of the possible channels and encoders to load and use
+# if there's a virtualenv, activate it
+activate_this = 'venv/bin/activate_this.py'
+if not os.path.exists(activate_this):
+    # if there isn't, create one
+    try:
+        subprocess.check_call(['virtualenv','venv'])
+    except subprocess.CalledProcessError as e:
+        # or at least try
+        print("Unable to create virtualenv. Please manually create a virtualenv named 'venv' and retry.")
+        sys.exit()
+
+execfile(activate_this, dict(__file__=activate_this))
 
 # generate paths to the encoder and channel folders
 if getattr(sys, 'frozen', False):
@@ -21,6 +33,7 @@ currentDir = os.path.dirname(filepath)
 channels = os.path.join(currentDir, 'channels')
 encoders = os.path.join(currentDir, 'encoders')
 
+# get all of the possible channels and encoders to load and use
 channels = pkgutil.iter_modules(path=[channels])
 encoders = pkgutil.iter_modules(path=[encoders])
 
@@ -90,7 +103,7 @@ parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="paramet
 def receiveData(channelName, params):
     # to use a channel:
     moduleName = '.'.join(['channels', channelName])
-    chan = importlib.import_module(moduleName)
+    chan = importModule(moduleName)
 
     # make sure we have all of the required parameters
     abort = False
@@ -113,7 +126,7 @@ def sendData(channelName, data, params):
 
     # import the channel module
     moduleName = '.'.join(['channels', channelName])
-    chan = importlib.import_module(moduleName)
+    chan = importModule(moduleName)
 
     # make sure we have all of the required parameters
     abort = False
@@ -131,9 +144,7 @@ def encode(encoderNames, data, params):
     # encode some data by passing it through the given encoder
     # encoder is ASSUMED GOOD
     moduleName = '.'.join(['encoders', encoderName])
-    enc = importlib.import_module(moduleName)
-    # This is a programmatic equivalent of:
-    # from encoding import exampleEncoder as enc
+    enc = importModule(moduleName)
 
     # make sure we have all of the required parameters
     abort = False
@@ -150,9 +161,7 @@ def encode(encoderNames, data, params):
 
 def decode(encoderName, data, params):
     moduleName = '.'.join(['encoders', encoderName])
-    enc = importlib.import_module(moduleName)
-    # This is a programmatic equivalent of:
-    # from encoding import exampleEncoder as enc
+    enc = importModule(moduleName)
 
     # make sure we have all of the required parameters
     abort = False
@@ -179,16 +188,29 @@ def channels():
     print('    ' + ', '.join(channelOptions))
     return
 
+def importModule(moduleName):
+    # helper function to import a module, check
+    # its dependencies, install if required, then
+    # return the module
+    mod = importlib.import_module(moduleName)
+    # install dependencies
+    for dep in mod.dependencies:
+        pip.main(['install', dep, '-q'])
+    return mod
+
 ############## RUN ##############
 args = parser.parse_args()
 d =  vars(args)
 
+#################################
 if args.subcommand == 'encoders':
     encoders()
 
+#################################
 if args.subcommand == 'channels':
     channels()
 
+#############################
 if args.subcommand == 'send':
     channelName = d.get('channelName')
     encoderNames = d.get('encoderNames')
@@ -224,6 +246,7 @@ if args.subcommand == 'send':
 
     sendData(channelName, encoded, params[channelName])
 
+################################
 if args.subcommand == 'receive':
     channelName = d.get('channelName')
     encoderNames = d.get('encoderNames')
@@ -267,6 +290,7 @@ if args.subcommand == 'receive':
     # write out the results
     sys.stdout.write(str(output))
 
+#############################
 if args.subcommand == 'echo':
     encoderNames = d.get('encoderNames')
     params = d.get('params')

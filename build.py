@@ -2,6 +2,12 @@
 
 import os
 import subprocess
+import pip
+
+import encoders
+import channels
+
+pip.main(['install', 'pyinstaller'])
 
 # absolute path to this file
 basedir = os.path.dirname(os.path.abspath(__file__))
@@ -9,5 +15,4 @@ basedir = os.path.dirname(os.path.abspath(__file__))
 # change to this file's directory
 os.chdir(basedir)
 
-print(os.getcwd())
-subprocess.check_call(["pyinstaller","./screep.spec"])
+subprocess.check_call(["pyinstaller","screep.spec"])
