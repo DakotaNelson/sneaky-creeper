@@ -13,6 +13,12 @@ requiredParams = {
                  }
     }
 
+dependencies = []
+# specify any external dependencies here as pip package name strings
+# for example:
+# dependencies = ['somePyPIPackage']
+# if you have to pip install it, it needs to go here
+
 def send(data, params):
     for _ in range(3):
         print("Simulating sending data...")

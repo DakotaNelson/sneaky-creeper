@@ -5,11 +5,19 @@ import sys
 import importlib
 import argparse
 import json
+import pip
 
 # get all of the possible channels and encoders to load and use
 
 # generate paths to the encoder and channel folders
-currentDir = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, 'frozen', False):
+    # we are running in a |PyInstaller| bundle
+    filepath = sys._MEIPASS
+    # NOTE this is untested and might not work yet
+else:
+    filepath = os.path.abspath(__file__)
+
+currentDir = os.path.dirname(filepath)
 channels = os.path.join(currentDir, 'channels')
 encoders = os.path.join(currentDir, 'encoders')
 

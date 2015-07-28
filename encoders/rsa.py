@@ -13,6 +13,7 @@ requiredParams = {
     }
 }
 
+dependencies = ['pycrypto']
 
 def encode(data, params):
     keyString = open(params['publicKey']).read()

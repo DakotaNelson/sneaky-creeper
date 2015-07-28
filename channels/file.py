@@ -13,6 +13,8 @@ requiredParams = {
                  }
     }
 
+dependencies = []
+
 def send(data, params):
     print("Writing data to " + params['filename'] + "...")
     with open(params['filename'] , 'w') as f:

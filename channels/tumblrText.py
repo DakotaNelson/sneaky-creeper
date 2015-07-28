@@ -25,6 +25,8 @@ requiredParams = {
                  }
     }
 
+dependencies = ['pytumblr']
+
 def send(data, params):
     client = pytumblr.TumblrRestClient(
                     params['key'],

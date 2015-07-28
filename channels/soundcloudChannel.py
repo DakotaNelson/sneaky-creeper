@@ -18,6 +18,8 @@ requiredParams = {
             }
         }
 
+dependencies = ['soundcloud']
+
 def send(data, params):
     client = soundcloud.Client(
         client_id=params['ID'],
@@ -58,7 +60,7 @@ def receive(params):
     wf = wave.open('file.wav', 'r')
     data = wf.readframes(wf.getnframes())
     return [data]
-    
+
 if __name__ == "__main__":
     #send(1,1)
     print(receive({'username':'user255215947', 'song_name':'channeltest2'}))

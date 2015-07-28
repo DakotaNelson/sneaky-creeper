@@ -8,6 +8,7 @@ requiredParams = {
     'decode': {}
 }
 
+dependencies = []
 
 def encode(data, params=None):
     return data

@@ -3,3 +3,5 @@
 *.wav
 *.swp
 venv
+build
+dist

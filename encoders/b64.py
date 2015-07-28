@@ -8,6 +8,8 @@ requiredParams = {
               }
     }
 
+dependencies = []
+
 def encode(data, params=None):
     return base64.b64encode(data)
 

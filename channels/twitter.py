@@ -23,6 +23,7 @@ requiredParams = {
                  }
     }
 
+dependencies = ['twython']
 
 def send(data, params):
     APP_KEY = params['key']

@@ -10,6 +10,8 @@ requiredParams = {
             }
         }
 
+dependencies = []
+
 def randomSound():
     return random.randint(-32767, 32767)
 
@@ -43,11 +45,11 @@ def decodeChar(data_8bit):
     bits = []
     for i in data_8bit:
         bits.append( i & 1 )
-    
+
     # Have to reverse bit set because of
     # how it was converted before
     bits = bits[::-1]
-        
+
     # Convert to char
     char = 0
     for i in bits:
@@ -78,7 +80,7 @@ def decode(data, params=None):
     for i in range(len(data)/bit_size):
         singleChar = [int(i) for i in data[i*8:8+i*8]]
         decoded_data.append(decodeChar(singleChar))
-    
+
     return ''.join(decoded_data)
 
 if __name__ == "__main__":
@@ -86,4 +88,4 @@ if __name__ == "__main__":
     encoded = encode(data_set);
     print(encoded)
     print(decode(encoded))
-    
+
