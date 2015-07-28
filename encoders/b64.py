@@ -12,4 +12,7 @@ def encode(data, params=None):
     return base64.b64encode(data)
 
 def decode(data, params=None):
-    return base64.urlsafe_b64decode(data)
+    try:
+        return base64.urlsafe_b64decode(data)
+    except TypeError:
+        return "b64 could not decode this message: it is improperly formatted"
