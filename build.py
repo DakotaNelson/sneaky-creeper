@@ -3,25 +3,32 @@
 import os
 import subprocess
 import pip
+import pkgutil
+import sys
 
 import encoders
 import channels
 
-# if there's a virtualenv, activate it
-activate_this = 'venv/bin/activate_this.py'
-if not os.path.exists(activate_this):
-    # if there isn't, create one
-    try:
-        subprocess.check_call(['virtualenv','venv'])
-    except subprocess.CalledProcessError as e:
-        # or at least try
-        print("Unable to create virtualenv. Please manually create a virtualenv named 'venv' and retry.")
-        sys.exit()
+from utils import venvMe, importModule
 
-execfile(activate_this, dict(__file__=activate_this))
+'''if not venvMe('venv'):
+    print("Unable to create virtualenv. Please manually create a virtualenv named 'venv' and retry.")
+    sys.exit()'''
 
 # get pyinstaller installed and ready
 pip.main(['install', 'pyinstaller'])
+
+# install all dependencies for encoders and channels
+# importModule automatically handles this for us
+for importer, modname, ispkg in pkgutil.iter_modules(encoders.__path__):
+    if not importModule("encoders." + modname, False):
+        print("Unable to import module '{}'".format(modname))
+        sys.exit()
+
+for importer, modname, ispkg in pkgutil.iter_modules(channels.__path__):
+    if not importModule("channels." + modname, False):
+        print("Unable to import module '{}'".format(modname))
+        sys.exit()
 
 # absolute path to this file
 basedir = os.path.dirname(os.path.abspath(__file__))

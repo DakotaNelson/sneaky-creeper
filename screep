@@ -2,24 +2,14 @@
 import os
 import pkgutil
 import sys
-import importlib
 import argparse
 import json
-import pip
-import subprocess
 
-# if there's a virtualenv, activate it
-activate_this = 'venv/bin/activate_this.py'
-if not os.path.exists(activate_this):
-    # if there isn't, create one
-    try:
-        subprocess.check_call(['virtualenv','venv'])
-    except subprocess.CalledProcessError as e:
-        # or at least try
-        print("Unable to create virtualenv. Please manually create a virtualenv named 'venv' and retry.")
-        sys.exit()
+from utils import importModule, venvMe
 
-execfile(activate_this, dict(__file__=activate_this))
+if not venvMe('venv'):
+    print("Unable to create virtualenv. Please manually create a virtualenv named 'venv' and retry.")
+    sys.exit()
 
 # generate paths to the encoder and channel folders
 if getattr(sys, 'frozen', False):
@@ -187,16 +177,6 @@ def channels():
     print("Currently available channels:")
     print('    ' + ', '.join(channelOptions))
     return
-
-def importModule(moduleName):
-    # helper function to import a module, check
-    # its dependencies, install if required, then
-    # return the module
-    mod = importlib.import_module(moduleName)
-    # install dependencies
-    for dep in mod.dependencies:
-        pip.main(['install', dep, '-q'])
-    return mod
 
 ############## RUN ##############
 args = parser.parse_args()
