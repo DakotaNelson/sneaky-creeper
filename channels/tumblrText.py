@@ -6,7 +6,6 @@ Written by Dakota Nelson (@jerkota)
 
 import random
 import string
-import pytumblr
 
 requiredParams = {
     'sending': {
@@ -28,6 +27,7 @@ requiredParams = {
 dependencies = ['pytumblr']
 
 def send(data, params):
+    import pytumblr
     client = pytumblr.TumblrRestClient(
                     params['key'],
                     params['secret'],
@@ -41,6 +41,7 @@ def send(data, params):
     return
 
 def receive(params):
+    import pytumblr
     client = pytumblr.TumblrRestClient(
                     params['key'],
                     params['secret'],

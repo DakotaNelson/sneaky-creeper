@@ -1,5 +1,3 @@
-from Crypto.Cipher import PKCS1_OAEP
-from Crypto.PublicKey import RSA
 
 
 requiredParams = {
@@ -16,6 +14,8 @@ requiredParams = {
 dependencies = ['pycrypto']
 
 def encode(data, params):
+    from Crypto.Cipher import PKCS1_OAEP
+    from Crypto.PublicKey import RSA
     keyString = open(params['publicKey']).read()
     key = RSA.importKey(keyString)
     cipher = PKCS1_OAEP.new(key)
@@ -24,6 +24,8 @@ def encode(data, params):
 
 
 def decode(data, params):
+    from Crypto.Cipher import PKCS1_OAEP
+    from Crypto.PublicKey import RSA
     keyString = open(params['privateKey']).read()
     key = RSA.importKey(keyString)
     cipher = PKCS1_OAEP.new(key)

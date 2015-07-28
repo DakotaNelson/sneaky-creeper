@@ -1,7 +1,6 @@
 import random
 import struct
 import wave
-import soundcloud
 import os, re, urllib
 
 requiredParams = {
@@ -21,6 +20,7 @@ requiredParams = {
 dependencies = ['soundcloud']
 
 def send(data, params):
+    import soundcloud
     client = soundcloud.Client(
         client_id=params['ID'],
         client_secret=params['secret'],
@@ -55,6 +55,7 @@ def send(data, params):
     return
 
 def receive(params):
+    import soundcloud
     urllib.urlretrieve("http://soundcloud.com/" + params['username'] +\
             "/" + params['song_name']+ "/download", 'file.wav')
     wf = wave.open('file.wav', 'r')

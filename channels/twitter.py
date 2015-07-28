@@ -1,6 +1,5 @@
 #This module written by Gabriel Butterick and Bonnie Ishiguro
 
-from twython import Twython, TwythonError
 import time
 
 description = "Posts data to Twitter as a series of 140 character Tweets."
@@ -26,6 +25,7 @@ requiredParams = {
 dependencies = ['twython']
 
 def send(data, params):
+    from twython import Twython, TwythonError
     APP_KEY = params['key']
     APP_SECRET = params['secret']
     OAUTH_TOKEN = params['token']
@@ -41,6 +41,7 @@ def send(data, params):
     return
 
 def receive(params):
+    from twython import Twython, TwythonError
     APP_KEY = params['key']
     APP_SECRET = params['secret']
     OAUTH_TOKEN = params['token']
