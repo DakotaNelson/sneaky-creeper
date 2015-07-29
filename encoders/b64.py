@@ -13,6 +13,6 @@ def encode(data, params=None):
 
 def decode(data, params=None):
     try:
-        return base64.urlsafe_b64decode(data)
+        return base64.urlsafe_b64decode(str(data))
     except TypeError:
         return "b64 could not decode this message: it is improperly formatted"
