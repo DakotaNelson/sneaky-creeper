@@ -65,3 +65,7 @@ It should now mimic the access level of the Consumer Key
 #####Tumblr:
 
 Make a Tumblr account and [create an app](https://www.tumblr.com/oauth/apps). Then, visit the [API console](https://api.tumblr.com/console/calls/user/info) and note down the four strings there; these are your `key`, `secret`, `token`, and `token_secret`.
+
+#####Soundcloud:
+
+Make a Soundcloud account and [register and app](https://developers.soundcloud.com/docs/api/guide). Visist your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
