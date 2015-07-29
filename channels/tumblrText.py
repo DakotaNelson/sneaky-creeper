@@ -8,6 +8,10 @@ import random
 import string
 import pytumblr
 
+################### Attributes ###################
+
+description = "Posts data to Tumblr as text."
+
 requiredParams = {
     'sending': {
         'username': 'Your Tumblr username.',
@@ -24,6 +28,14 @@ requiredParams = {
         'token_secret': 'Your Tumblr OAuth token secret.',
                  }
     }
+
+maxLength = 50000
+# I don't think there's an actual limit, but let's pace ourselves
+
+maxHourly = 250/24
+# Can only post 250 times per day
+
+################### Functions ###################
 
 def send(data, params):
     client = pytumblr.TumblrRestClient(

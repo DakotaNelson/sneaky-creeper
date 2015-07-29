@@ -3,6 +3,8 @@
 from twython import Twython, TwythonError
 import time
 
+################### Attributes ###################
+
 description = "Posts data to Twitter as a series of 140 character Tweets."
 
 # TODO add optional params?
@@ -23,6 +25,12 @@ requiredParams = {
                  }
     }
 
+maxLength = 140
+
+maxHourly = 100
+# Can only post 100 times per hour or 1000 times per day
+
+################### Functions ###################
 
 def send(data, params):
     APP_KEY = params['key']

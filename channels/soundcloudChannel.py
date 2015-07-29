@@ -4,6 +4,8 @@ import wave
 import soundcloud
 import os, re, urllib
 
+################### Attributes ###################
+
 requiredParams = {
         'sending': {
             'ID':'Application ID for Soundcloud API',
@@ -17,6 +19,15 @@ requiredParams = {
             'song_name':'Name of the sound file to be downloaded'
             }
         }
+
+maxLength = 44100 * 60 * 180
+# http://help.soundcloud.com/customer/portal/articles/1662265-how-does-my-account-s-upload-limit-work-
+# you can only upload a TOTAL of 180 minutes - after that you'll have to delete some
+
+maxHourly = 120
+# not sure what this actually is
+
+################### Functions ###################
 
 def send(data, params):
     client = soundcloud.Client(
@@ -58,7 +69,7 @@ def receive(params):
     wf = wave.open('file.wav', 'r')
     data = wf.readframes(wf.getnframes())
     return [data]
-    
+
 if __name__ == "__main__":
     #send(1,1)
     print(receive({'username':'user255215947', 'song_name':'channeltest2'}))
