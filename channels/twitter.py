@@ -41,9 +41,7 @@ def send(data, params):
 
     twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
-    tweets = [data[i:i+140] for i in range(0, len(data), 140)]
-    for tweet in tweets:
-      twitter.update_status(status=tweet)
+    twitter.update_status(status=tweet)
 
     return
 
