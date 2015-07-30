@@ -68,4 +68,4 @@ Make a Tumblr account and [create an app](https://www.tumblr.com/oauth/apps). Th
 
 #####Soundcloud:
 
-Make a Soundcloud account and [register and app](https://developers.soundcloud.com/docs/api/guide). Visist your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
+Make a Soundcloud account and [register and app](https://developers.soundcloud.com/docs/api/guide). Visit your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
