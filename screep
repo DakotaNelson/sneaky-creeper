@@ -27,6 +27,7 @@ encodingOptions = [modName for _,modName,_ in encoders]
 # you can input multiple transfer arguments, so -transfer and encoder will give a
 # list of arguments. Need to change use encoder and use channel to loop
 parser = argparse.ArgumentParser(description='Use social media as a tool for data exfiltration.')
+parser.add_argument('--verbose', '-v', help = 'Output debug and help information.', action='store_true')
 subparsers = parser.add_subparsers(dest='subcommand')
 
 # subparser for encoder exploration
@@ -37,6 +38,7 @@ parser_encoders = subparsers.add_parser('encoders')
 #  subparser for channel exploration
 parser_channels = subparsers.add_parser('channels')
 #parser_channels.add_argument()
+
 
 # subparser for sending data
 parser_send = subparsers.add_parser('send')
@@ -67,6 +69,7 @@ parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="para
                              help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
 
 
+
 # subparser for echoing data
 parser_echo = subparsers.add_parser('echo')
 
@@ -79,8 +82,53 @@ parser_echo.add_argument('--input', '-i', help = 'Specify a file to read from, o
 parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=json.loads,
                              help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
 
+# parse the args
+args = parser.parse_args()
+d =  vars(args)
 
-######### END ARG PARSER #########
+############################################################
+################# Output Functions #########################
+############################################################
+
+# output functions inspired by  https://bitbucket.org/LaNMaSteR53/recon-ng
+class Colors(object):
+    N = '\033[m' # native
+    R = '\033[31m' # red
+    G = '\033[32m' # green
+    O = '\033[33m' # orange
+    B = '\033[34m' # blue
+
+if args.verbose:
+    def output(text, raw=False):
+        # formats and outputs regular text
+        if raw:
+            sys.stdout.write(text)
+        else:
+            print('{}[*]{} {}'.format(Colors.B, Colors.N, text))
+
+    def progressBar(n, total):
+        # repeatedly call as progress happens
+        # must start at 0
+        sys.stdout.write("\r{} of {}".format(n + 1, total))
+        sys.stdout.flush()
+        if n == total-1:
+            sys.stdout.write('\n')
+
+
+else:
+    # don't output anything
+    output = lambda *a, **k: None
+    progressBar = output
+    # doing it this way means we aren't constantly checking args.verbose
+
+def error(text):
+    # formats and outputs errors
+    text = text[:1].upper() + text[1:]
+    print('{}[!] {}{}'.format(Colors.R, text, Colors.N))
+
+############################################################
+############### Send/Receive Functions #####################
+############################################################
 
 def receiveData(channelName, params):
     moduleName = '.'.join(['channels', channelName])
@@ -90,7 +138,7 @@ def receiveData(channelName, params):
     abort = False
     for param,desc in chan.requiredParams['receiving'].iteritems():
         if not param in params:
-            print("ERROR: Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
+            error("Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
             abort = True # so that multiple problems can be found in one run
     if(abort):
         sys.exit()
@@ -133,7 +181,7 @@ def receiveData(channelName, params):
 def sendData(channelName, data, params):
     # ensure the passed modules are valid
     if not channelName in channelOptions:
-        print("ERROR: channel " + channelName + " does not exist.")
+        error("Channel " + channelName + " does not exist.")
         return
 
     # import the channel module
@@ -144,7 +192,7 @@ def sendData(channelName, data, params):
     abort = False
     for param in chan.requiredParams['sending']:
         if not param in params:
-            print("ERROR: Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
+            error("Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
             abort = True # so that multiple problems can be found in one run
     if(abort):
         sys.exit()
@@ -166,6 +214,11 @@ def sendData(channelName, data, params):
     if numPackets > maxPackets:
         raise ValueError("you can only send " + maxPackets + " packets at a time")
 
+    if numPackets == 1:
+        output("Sending 1 packet.")
+    else:
+        output("Sending " + str(numPackets) + " packets.")
+
     for i in range(numPackets):
         # wrap the data in headers
         packet = base94.encode(i) + " " + base94.encode(numPackets) + " " + data[i*actualLength:(i+1)*actualLength]
@@ -174,6 +227,8 @@ def sendData(channelName, data, params):
         if len(packet) > chan.maxLength:
             raise ValueError(moduleName + " cannot send more than " + chan.maxLength + " characters")
 
+        # if verbose, print a status update
+        progressBar(i, numPackets)
         # send some stuff
         chan.send(packet, params)
 
@@ -189,7 +244,7 @@ def encode(encoderNames, data, params):
     abort = False
     for param in enc.requiredParams['encode']:
         if not params or not param in params:
-            print("ERROR: Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
+            error("Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
             abort = True # so that multiple problems can be found in one run
     if(abort):
         sys.exit()
@@ -208,7 +263,7 @@ def decode(encoderName, data, params):
     abort = False
     for param,desc in enc.requiredParams['decode'].iteritems():
         if not params or not param in params:
-            print("ERROR: Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
+            error("Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
             abort = True # so that multiple problems can be found in one run
     if(abort):
         sys.exit()
@@ -230,9 +285,6 @@ def channels():
     return
 
 ############## RUN ##############
-args = parser.parse_args()
-d =  vars(args)
-
 if args.subcommand == 'encoders':
     encoders()
 
@@ -248,18 +300,16 @@ if args.subcommand == 'send':
     # check the encoders all exist
     for encoderName in encoderNames:
         if not encoderName in encodingOptions:
-            print("ERROR: encoder " + encoderName + " does not exist. Exiting.")
+            error("Encoder " + encoderName + " does not exist. Exiting.")
             sys.exit()
 
     # check the channel exists
     if not channelName in channelOptions:
-        print("ERROR: channel " + channelName + " does not exist. Exiting.")
+        error("Channel " + channelName + " does not exist. Exiting.")
         sys.exit()
 
     # tell the user what we're going to do
-    print("")
-    print("Pipeline: " + " -> ".join(encoderNames) + " -> " + channelName)
-    print("")
+    output("Pipeline: " + " -> ".join(encoderNames) + " -> " + channelName)
 
     for encoderName in encoderNames:
         if not encoderName in params:
@@ -278,16 +328,17 @@ if args.subcommand == 'receive':
     channelName = d.get('channelName')
     encoderNames = d.get('encoderNames')
     params = d.get('params')
+    if params is None: params = {}
 
     # check the encoders all exist
     for encoderName in encoderNames:
         if not encoderName in encodingOptions:
-            print("ERROR: encoder " + encoderName + " does not exist. Exiting.")
+            error("Encoder " + encoderName + " does not exist. Exiting.")
             sys.exit()
 
     # check the channel exists
     if not channelName in channelOptions:
-        print("ERROR: channel " + channelName + " does not exist. Exiting.")
+        error("Channel " + channelName + " does not exist. Exiting.")
         sys.exit()
 
     if not channelName in params:
@@ -326,12 +377,10 @@ if args.subcommand == 'echo':
     # check the encoders all exist
     for encoderName in encoderNames:
         if encoderName not in encodingOptions:
-            print("ERROR: encoder " +
-                  encoderName +
-                  " does not exist. Exiting.")
+            error("encoder " + encoderName + " does not exist. Exiting.")
             sys.exit()
 
     encoded = encode(encoderNames, data, params)
-    print("Encoded: " + encoded)
+    output("Encoded: " + encoded)
     decoded = decode(encoderNames, encoded, params)
-    print("Decoded: " + decoded)
+    output("Decoded: " + decoded)

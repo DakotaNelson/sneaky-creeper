@@ -25,15 +25,15 @@ maxHourly = sys.maxint
 ################### Functions ###################
 
 def send(data, params):
-    print("Writing data to " + params['filename'] + "...")
+    #print("Writing data to " + params['filename'] + "...")
     with open(params['filename'] , 'w') as f:
         f.write(data)
-    print("Done.")
+    #print("Done.")
     return
 
 def receive(params):
-    print("Reading data from " + params['filename'] + "...")
+    #print("Reading data from " + params['filename'] + "...")
     with open(params['filename'], 'rb') as f:
         data = f.read()
-    print("Done.")
+    #print("Done.")
     return [data]
