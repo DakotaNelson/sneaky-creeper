@@ -109,7 +109,7 @@ if args.verbose:
     def progressBar(n, total):
         # repeatedly call as progress happens
         # must start at 0
-        sys.stdout.write("\r{} of {}".format(n, total))
+        sys.stdout.write("\r{} of {}".format(n + 1, total))
         sys.stdout.flush()
         if n == total-1:
             sys.stdout.write('\n')
