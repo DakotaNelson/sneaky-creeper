@@ -5,7 +5,7 @@ import pkgutil
 import sys
 import importlib
 import argparse
-import json
+import util
 
 import base94
 
@@ -52,9 +52,8 @@ parser_send.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="enco
 parser_send.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
                              metavar = 'filename', type = argparse.FileType('r'), default = '-')
 
-parser_send.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=json.loads, default={},
+parser_send.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=util.jsonParse, default={},
                              help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
-
 
 # subparser for fetching data
 parser_receive = subparsers.add_parser('receive')
@@ -65,7 +64,7 @@ parser_receive.add_argument('--channel', '-c', dest = 'channelName', metavar="ch
 parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
                              help = 'Choose one or more methods of encoding (done in order given).', required=True)
 
-parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=json.loads, default={},
+parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=util.jsonParse, default={},
                              help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
 
 
@@ -79,7 +78,7 @@ parser_echo.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="enco
 parser_echo.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
                              metavar = 'filename', type = argparse.FileType('r'), default = '-')
 
-parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=json.loads, default={},
+parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=util.jsonParse, default={},
                              help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
 
 # parse the args
