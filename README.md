@@ -37,6 +37,25 @@ To just test out the base64 encoder:
 
 If you specify multiple encoders, the order is automatically reversed on decode so that you can specify them in the same order on both sides of the transmission and everything will work.
 
+Parameters
+==========
+
+Many channels and encoders require parameters to function. These parameters are submitted as JSON, keyed with the encoder or channel name. The value of these parameters is either one or several key-value pairs with the key specified by the encoder or channel.
+
+For example, the rsa encoder requires a public key filename, keyed as `publicKey` to send data, and a private key filename keyed as `privateKey` to receive it. Since the echo command both sends and receives, you can include the necessary parameters via the `-p` or `--parameters` flag followed by a JSON string (note the single quotes!) in your command as shown:
+
+`echo "super secret" | ./screep echo -e rsa -p '{"rsa": {"publicKey": "rsakey.pem.pub", "privateKey": "rsakey.pem"}}'`
+
+Alternatively, because it's a bore to enter all those parameters every time, they can be placed in a JSON file (with no need for the single quotes). In that case, simply use the filename as an argument.
+
+For example, if you have a file `config.json` which contains the JSON:
+`{"rsa": {"publicKey": "rsakey.pem.pub", "privateKey": "rsakey.pem"}}`
+
+Import the parameters from it via:
+`-p config.json` or `-p "config.json"`
+
+Leading to the much more succint command:
+`echo "super secret" | ./screep echo -e rsa -p config.json`
 
 Setup
 =====
