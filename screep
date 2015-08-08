@@ -20,82 +20,81 @@ channels = pkgutil.iter_modules(path=[channels])
 encoders = pkgutil.iter_modules(path=[encoders])
 
 # these are all of the modules available to be loaded and used
-channelOptions = [modName for _,modName,_ in channels]
-encodingOptions = [modName for _,modName,_ in encoders]
+channelOptions = [modName for _, modName, _ in channels]
+encodingOptions = [modName for _, modName, _ in encoders]
 
 # command line arguments:
 # you can input multiple transfer arguments, so -transfer and encoder will give a
 # list of arguments. Need to change use encoder and use channel to loop
 parser = argparse.ArgumentParser(description='Use social media as a tool for data exfiltration.')
-parser.add_argument('--verbose', '-v', help = 'Output debug and help information.', action='store_true')
+parser.add_argument('--verbose', '-v', help='Output debug and help information.', action='store_true')
 subparsers = parser.add_subparsers(dest='subcommand')
 
 # subparser for encoder exploration
 parser_encoders = subparsers.add_parser('encoders')
-#parser_encoders.add_argument()
+# parser_encoders.add_argument()
 
-
-#  subparser for channel exploration
+# subparser for channel exploration
 parser_channels = subparsers.add_parser('channels')
-#parser_channels.add_argument()
-
+# parser_channels.add_argument()
 
 # subparser for sending data
 parser_send = subparsers.add_parser('send')
-parser_send.add_argument('--channel', '-c', dest = 'channelName', metavar="channel_name", action = 'store',
-                             help = 'Choose a channel to transfer data over \
-                             (e.g, --transfer twitter).', required = True)
+parser_send.add_argument('--channel', '-c', dest='channelName', metavar="channel_name", action='store',
+                         help='Choose a channel to transfer data over \
+                             (e.g, --transfer twitter).', required=True)
 
-parser_send.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
-                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
+parser_send.add_argument('--encoder', '-e', dest='encoderNames', metavar="encoder_name", nargs='+', action='store',
+                         help='Choose one or more methods of encoding (done in order given).', required=True)
 
-parser_send.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
-                             metavar = 'filename', type = argparse.FileType('r'), default = '-')
+parser_send.add_argument('--input', '-i', help='Specify a file to read from, or leave blank for stdin.', \
+                         metavar='filename', type=argparse.FileType('r'), default='-')
 
-parser_send.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=util.jsonParse, default={},
-                             help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
+parser_send.add_argument('--parameters', '-p', dest='params', metavar="parameter_name", type=util.jsonParse, default={},
+                         help="Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
 
 # subparser for fetching data
 parser_receive = subparsers.add_parser('receive')
-parser_receive.add_argument('--channel', '-c', dest = 'channelName', metavar="channel_name", action = 'store',
-                             help = 'Choose a channel to transfer data over \
-                             (e.g, --transfer twitter).', required = True)
+parser_receive.add_argument('--channel', '-c', dest='channelName', metavar="channel_name", action='store',
+                            help='Choose a channel to transfer data over \
+                             (e.g, --transfer twitter).', required=True)
 
-parser_receive.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
-                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
+parser_receive.add_argument('--encoder', '-e', dest='encoderNames', metavar="encoder_name", nargs='+', action='store',
+                            help='Choose one or more methods of encoding (done in order given).', required=True)
 
-parser_receive.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=util.jsonParse, default={},
-                             help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
-
-
+parser_receive.add_argument('--parameters', '-p', dest='params', metavar="parameter_name", type=util.jsonParse,
+                            default={},
+                            help="Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
 
 # subparser for echoing data
 parser_echo = subparsers.add_parser('echo')
 
-parser_echo.add_argument('--encoder', '-e', dest = 'encoderNames', metavar="encoder_name", nargs='+', action = 'store',
-                             help = 'Choose one or more methods of encoding (done in order given).', required=True)
+parser_echo.add_argument('--encoder', '-e', dest='encoderNames', metavar="encoder_name", nargs='+', action='store',
+                         help='Choose one or more methods of encoding (done in order given).', required=True)
 
-parser_echo.add_argument('--input', '-i', help = 'Specify a file to read from, or leave blank for stdin.',\
-                             metavar = 'filename', type = argparse.FileType('r'), default = '-')
+parser_echo.add_argument('--input', '-i', help='Specify a file to read from, or leave blank for stdin.', \
+                         metavar='filename', type=argparse.FileType('r'), default='-')
 
-parser_echo.add_argument('--parameters', '-p', dest = 'params', metavar="parameter_name", type=util.jsonParse, default={},
-                             help = "Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
+parser_echo.add_argument('--parameters', '-p', dest='params', metavar="parameter_name", type=util.jsonParse, default={},
+                         help="Specify parameters in JSON as shown (including quotations): -p '{\"encoderOrChannel\": {\"key\": \"value\", ...}, ...}'")
 
 # parse the args
 args = parser.parse_args()
-d =  vars(args)
+d = vars(args)
 
 ############################################################
-################# Output Functions #########################
+#                     Output Functions                     #
 ############################################################
+
 
 # output functions inspired by  https://bitbucket.org/LaNMaSteR53/recon-ng
 class Colors(object):
-    N = '\033[m' # native
-    R = '\033[31m' # red
-    G = '\033[32m' # green
-    O = '\033[33m' # orange
-    B = '\033[34m' # blue
+    N = '\033[m'  # native
+    R = '\033[31m'  # red
+    G = '\033[32m'  # green
+    O = '\033[33m'  # orange
+    B = '\033[34m'  # blue
+
 
 if args.verbose:
     def output(text, raw=False):
@@ -110,7 +109,7 @@ if args.verbose:
         # must start at 0
         sys.stdout.write("\r{} of {}".format(n + 1, total))
         sys.stdout.flush()
-        if n == total-1:
+        if n == total - 1:
             sys.stdout.write('\n')
 
 
@@ -120,13 +119,15 @@ else:
     progressBar = output
     # doing it this way means we aren't constantly checking args.verbose
 
+
 def error(text):
     # formats and outputs errors
     text = text[:1].upper() + text[1:]
     print('{}[!] {}{}'.format(Colors.R, text, Colors.N))
 
+
 ############################################################
-############### Send/Receive Functions #####################
+#                 Send/Receive Functions                   #
 ############################################################
 
 def receiveData(channelName, params):
@@ -135,23 +136,22 @@ def receiveData(channelName, params):
 
     # make sure we have all of the required parameters
     abort = False
-    for param,desc in chan.requiredParams['receiving'].iteritems():
-        if not param in params:
+    for param, desc in chan.requiredParams['receiving'].iteritems():
+        if param not in params:
             error("Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
-            abort = True # so that multiple problems can be found in one run
-    if(abort):
-        sys.exit()
+            abort = True  # so that multiple problems can be found in one run
+    if abort:
+        sys.exit(1)
 
     # receive some stuff
     resp = chan.receive(params)
-
     # reassemble packets into segments
     segments = []
     buf = []
     # reverse the response so we get oldest first
     for msg in reversed(resp):
         # strip and decode the headers
-        tokenized = msg.split(" ")
+        tokenized = msg.split(" ", 2)
         packetNo = base94.decode(str(tokenized[0]))
         packetTotal = base94.decode(str(tokenized[1]))
         msg = ''.join(tokenized[2:])
@@ -161,7 +161,7 @@ def receiveData(channelName, params):
             continue
 
         # if the packet number isn't equal to the total packets in the segment
-        if packetNo+1 != packetTotal:
+        if packetNo + 1 != packetTotal:
             # we haven't found the last packet yet, so append this one to the buffer
             buf.append(msg)
         else:
@@ -177,9 +177,10 @@ def receiveData(channelName, params):
 
     return segments
 
+
 def sendData(channelName, data, params):
     # ensure the passed modules are valid
-    if not channelName in channelOptions:
+    if channelName not in channelOptions:
         error("Channel " + channelName + " does not exist.")
         return
 
@@ -190,11 +191,11 @@ def sendData(channelName, data, params):
     # make sure we have all of the required parameters
     abort = False
     for param in chan.requiredParams['sending']:
-        if not param in params:
+        if param not in params:
             error("Missing required parameter \'{}\' for channel \'{}\'.".format(param, channelName))
-            abort = True # so that multiple problems can be found in one run
-    if(abort):
-        sys.exit()
+            abort = True  # so that multiple problems can be found in one run
+    if abort:
+        sys.exit(1)
 
     # header format: "lll nnn <data>"
     # where "lll" is a 3 character base94 number representing this packet's index
@@ -204,7 +205,7 @@ def sendData(channelName, data, params):
     # or ~100ish MB assuming each character is one byte
     # pretty sure nobody will ever need more than 640k of ram
 
-    headerLength = 8 # reserve characters for the headers
+    headerLength = 8  # reserve characters for the headers
     actualLength = chan.maxLength - headerLength
 
     # determine the number of packets we'll need to send
@@ -220,7 +221,8 @@ def sendData(channelName, data, params):
 
     for i in range(numPackets):
         # wrap the data in headers
-        packet = base94.encode(i) + " " + base94.encode(numPackets) + " " + data[i*actualLength:(i+1)*actualLength]
+        packet = base94.encode(i) + " " + base94.encode(numPackets) + " " + data[
+                                                                            i * actualLength:(i + 1) * actualLength]
 
         # double check that nothing went wrong
         if len(packet) > chan.maxLength:
@@ -230,6 +232,7 @@ def sendData(channelName, data, params):
         progressBar(i, numPackets)
         # send some stuff
         chan.send(packet, params)
+
 
 def encode(encoderName, data, params):
     # encode some data by passing it through the given encoder
@@ -242,15 +245,15 @@ def encode(encoderName, data, params):
     # make sure we have all of the required parameters
     abort = False
     for param in enc.requiredParams['encode']:
-        if not params or not param in params:
+        if not params or param not in params:
             error("Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
-            abort = True # so that multiple problems can be found in one run
-    if(abort):
-        sys.exit()
+            abort = True  # so that multiple problems can be found in one run
+    if abort:
+        sys.exit(1)
 
     data = enc.encode(data, params)
-
     return data
+
 
 def decode(encoderName, data, params):
     moduleName = '.'.join(['encoders', encoderName])
@@ -260,16 +263,17 @@ def decode(encoderName, data, params):
 
     # make sure we have all of the required parameters
     abort = False
-    for param,desc in enc.requiredParams['decode'].iteritems():
-        if not params or not param in params:
+    for param, desc in enc.requiredParams['decode'].iteritems():
+        if not params or param not in params:
             error("Missing required parameter \'{}\' for encoder \'{}\'.".format(param, encoderName))
-            abort = True # so that multiple problems can be found in one run
-    if(abort):
-        sys.exit()
+            abort = True  # so that multiple problems can be found in one run
+    if abort:
+        sys.exit(1)
 
     data = enc.decode(data, params)
 
     return data
+
 
 def encoders():
     # Do everything to handle the 'encoders' subcommand.
@@ -277,16 +281,16 @@ def encoders():
     print('    ' + ', '.join(encodingOptions))
     return
 
+
 def channels():
     # Do everything to handle the 'channels' subcommand.
     print("Currently available channels:")
     print('    ' + ', '.join(channelOptions))
     return
 
-############## RUN ##############
-
-args = parser.parse_args()
-d = vars(args)
+################################################################
+#                        RUN                                   #
+################################################################
 
 if args.subcommand == 'encoders':
     encoders()
@@ -298,27 +302,27 @@ if args.subcommand == 'send':
     channelName = d.get('channelName')
     encoderNames = d.get('encoderNames')
     params = d.get('params')
-    data = d.get('input').read() # either a given file, or stdin
+    data = d.get('input').read()  # either a given file, or stdin
 
     # check the encoders all exist
     for encoderName in encoderNames:
-        if not encoderName in encodingOptions:
+        if encoderName not in encodingOptions:
             error("Encoder " + encoderName + " does not exist. Exiting.")
-            sys.exit()
+            sys.exit(1)
 
     # check the channel exists
-    if not channelName in channelOptions:
+    if channelName not in channelOptions:
         error("Channel " + channelName + " does not exist. Exiting.")
-        sys.exit()
+        sys.exit(1)
 
     # tell the user what we're going to do
     output("Pipeline: " + " -> ".join(encoderNames) + " -> " + channelName)
 
     for encoderName in encoderNames:
-        if not encoderName in params:
+        if encoderName not in params:
             params[encoderName] = {}
 
-    if not channelName in params:
+    if channelName not in params:
         params[channelName] = {}
 
     encoded = data
@@ -331,20 +335,21 @@ if args.subcommand == 'receive':
     channelName = d.get('channelName')
     encoderNames = d.get('encoderNames')
     params = d.get('params')
-    if params is None: params = {}
+    if params is None:
+        params = {}
 
     # check the encoders all exist
     for encoderName in encoderNames:
-        if not encoderName in encodingOptions:
+        if encoderName not in encodingOptions:
             error("Encoder " + encoderName + " does not exist. Exiting.")
-            sys.exit()
+            sys.exit(1)
 
     # check the channel exists
-    if not channelName in channelOptions:
+    if channelName not in channelOptions:
         error("Channel " + channelName + " does not exist. Exiting.")
-        sys.exit()
+        sys.exit(1)
 
-    if not channelName in params:
+    if channelName not in params:
         params[channelName] = {}
     data = receiveData(channelName, params[channelName])
 
@@ -356,7 +361,7 @@ if args.subcommand == 'receive':
 
     # if params aren't specified, set it blank so we don't get KeyErrors thrown
     for encoderName in encoderNames:
-        if not encoderName in params:
+        if encoderName not in params:
             params[encoderName] = {}
 
     output = []
@@ -381,7 +386,7 @@ if args.subcommand == 'echo':
         # Check that all encoders exist
         if encoderName not in encodingOptions:
             error("encoder " + encoderName + " does not exist. Exiting.")
-            sys.exit()
+            sys.exit(1)
 
         if encoderName not in params:
             params[encoderName] = {}

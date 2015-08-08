@@ -18,18 +18,18 @@ To see what encoders are available:
 
 To write some data to a file in plaintext:
 
-`echo "some data" | ./screep send -e identity -c file -p '{"file": {"filename", "test.txt"}}'`
+`echo "some data" | ./screep send -e identity -c file -p '{"file": {"filename": "test.txt"}}'`
 
 See how useful that is?
 
 To read the file back in:
 
-`./screep receive -e identity -c file -p '{"file": {"filename", "test.txt"}}'`
+`./screep receive -e identity -c file -p '{"file": {"filename": "test.txt"}}'`
 
 To do the same, but encrypt the file's contents with RSA:
 
-`echo "some data" | ./screep send -e rsa -c file -p '{"file": {"filename", "test.txt"}, "rsa": {"publicKey": "rsakey.pem.pub"}}'  `  
-`./screep receive -e rsa -c file -p '{"file": {"filename", "test.txt"}, "rsa": {"privateKey": "rsakey.pem"}}' privateKey`
+`echo "some data" | ./screep send -e rsa -c file -p '{"file": {"filename": "test.txt"}, "rsa": {"publicKey": "rsakey.pem.pub"}}'  `  
+`./screep receive -e rsa -c file -p '{"file": {"filename": "test.txt"}, "rsa": {"privateKey": "rsakey.pem"}}' privateKey`
 
 To just test out the base64 encoder:
 
