@@ -1,4 +1,5 @@
 import scrypt
+import base64
 
 requiredParams = {
     'encode': {
@@ -11,10 +12,10 @@ requiredParams = {
 
 
 def encode(data, params):
-    return scrypt.encrypt(data, params['key'].encode('ascii'), 0.1)
-
+    en = scrypt.encrypt(data, params['key'].encode('ascii'), 0.1)
+    return base64.b64encode(en)
 
 def decode(data, params):
-    return scrypt.decrypt(data, params['key'].encode('ascii'))
-
+    de = base64.b64decode(data)
+    return scrypt.decrypt(de, params['key'].encode('ascii'))
 
