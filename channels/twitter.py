@@ -41,7 +41,7 @@ def send(data, params):
 
     twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
-    twitter.update_status(status=tweet)
+    twitter.update_status(status=data)
 
     return
 
