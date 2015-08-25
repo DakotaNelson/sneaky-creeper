@@ -20,7 +20,7 @@ To write some data to a file in plaintext:
 
 `echo "some data" | ./screep send -e identity -c file -p '{"file": {"filename": "test.txt"}}'`
 
-See how useful that is?
+Which, as you may have noticed, isn't that useful.
 
 To read the file back in:
 
@@ -31,7 +31,7 @@ To do the same, but encrypt the file's contents with RSA:
 `echo "some data" | ./screep send -e rsa -c file -p '{"file": {"filename": "test.txt"}, "rsa": {"publicKey": "rsakey.pem.pub"}}'  `  
 `./screep receive -e rsa -c file -p '{"file": {"filename": "test.txt"}, "rsa": {"privateKey": "rsakey.pem"}}' privateKey`
 
-To just test out the base64 encoder:
+Or, to just test out the base64 encoder by encoding your data, decoding it, then printing it to the console:
 
 `echo "some data" | ./screep echo -e b64`
 
@@ -62,7 +62,9 @@ Setup
 
 #### Dependencies:
 
-`sudo pip install pycrypto twython soundcloud`
+`virtuelenv venv && source venv/bin/activate && pip install -r requirements.txt`
+
+There have been some odd and complicated issues with dependencies due to the way sneaky-creeper dynamically imports modules (the runtime imports tend to ignore virtualenvs). These have been solved in the past by installing modules globally using `pip install --user -r requirements.txt`, which is a pretty ugly hack. We're working on a better solution.
 
 #### API Keys:
 
@@ -87,4 +89,9 @@ Make a Tumblr account and [create an app](https://www.tumblr.com/oauth/apps). Th
 
 #####Soundcloud:
 
-Make a Soundcloud account and [register and app](https://developers.soundcloud.com/docs/api/guide). Visit your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
+Make a Soundcloud account and [register an app](https://developers.soundcloud.com/docs/api/guide). Visit your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
+
+Tests
+=====
+
+`source venv/bin/activate && nosetests` will run all the tests. As of right now, the interplay between tests and config files is a bit odd, so some tests will fail if you don't have valid credentials to some of the services used for channels. We're working on making tests a more useful part of the project.

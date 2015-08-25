@@ -4,7 +4,7 @@ import random
 import string
 
 import pytumblr
-from channels import tumblrText
+from sneakers.channels import tumblrText
 
 class TestTumblr(unittest.TestCase):
 
@@ -12,7 +12,7 @@ class TestTumblr(unittest.TestCase):
     toDelete = 0
 
     def setUp(self):
-        with open('tumblr-config.json', 'rb') as f:
+        with open('config/tumblr-config.json', 'rb') as f:
             s = json.loads(f.read())
 
         self.params = s['tumblrText']
