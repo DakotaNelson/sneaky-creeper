@@ -1,30 +1,39 @@
 from Crypto.Cipher import PKCS1_OAEP
-from Crypto.PublicKey import RSA
+from Crypto.PublicKey import RSA as cryptoRSA
 
 
-requiredParams = {
-    'encode': {
-        'publicKey': 'The filename of the public key, ' +
-        'matched to the private key used for decryption.'
-    },
-    'decode': {
-        'privateKey': 'The filename of the private key, ' +
-        'matched to the public key used for decryption.'
+class Rsa():
+    requiredParams = {
+        'encode': {
+            'publicKey': 'The filename of the public key, ' +
+                         'matched to the private key used for decryption.'
+        },
+        'decode': {
+            'privateKey': 'The filename of the private key, ' +
+                          'matched to the public key used for decryption.'
+        }
     }
-}
 
+    params = dict()
 
-def encode(data, params):
-    keyString = open(params['publicKey']).read()
-    key = RSA.importKey(keyString)
-    cipher = PKCS1_OAEP.new(key)
-    ciphertext = cipher.encrypt(data)
-    return ciphertext
+    def __init__(self):
+        pass
 
+    def set_params(self, params):
+        self.params = params
 
-def decode(data, params):
-    keyString = open(params['privateKey']).read()
-    key = RSA.importKey(keyString)
-    cipher = PKCS1_OAEP.new(key)
-    message = cipher.decrypt(data)
-    return message
+    def encode(self, data):
+        encode_params = self.params['encode']
+        keystring = open(encode_params['publicKey']).read()
+        key = cryptoRSA.importKey(keystring)
+        cipher = PKCS1_OAEP.new(key)
+        ciphertext = cipher.encrypt(data)
+        return ciphertext
+
+    def decode(self, data):
+        decode_params = self.params['decode']
+        keystring = open(decode_params['privateKey']).read()
+        key = cryptoRSA.importKey(keystring)
+        cipher = PKCS1_OAEP.new(key)
+        message = cipher.decrypt(data)
+        return message

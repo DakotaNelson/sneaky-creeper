@@ -1,89 +1,97 @@
 # Lendian stegonography system
 # As of right now this can only encode the data
-#   into randomly generated integers.
+# into randomly generated integers.
 import random
 
-requiredParams = {
-        'encode':{
-            },
-        'decode':{
-            }
-        }
 
-def randomSound():
-    return random.randint(-32767, 32767)
+class Lendiansteganography():
+    requiredParams = {
+        'encode': {},
+        'decode': {}
+    }
 
-def encodeChar(char, encode_type='random'):
-    # Turn into an integer
-    char = ord(char)
+    def __init__(self):
+        pass
 
-    # Convert to bits with padding to ensure 8 bit
-    bits = []
-    for i in range(8):
-        bits.append( char & 1 )
-        char = char >> 1
+    @staticmethod
+    def __random_sound():
+        return random.randint(-32767, 32767)
 
-    encoded_data = []
-    if encode_type == 'random':
-        for i in bits:
-            tmp_data = randomSound()
-            if i == 0:
-                tmp_data = tmp_data & ~1
-            else:
-                tmp_data = tmp_data | 1
+    def __encode_char(self, char, encode_type='random'):
+        # Turn into an integer
+        char = ord(char)
 
-            encoded_data.append(str(tmp_data))
+        # Convert to bits with padding to ensure 8 bit
+        bits = []
+        for i in range(8):
+            bits.append(char & 1)
+            char >>= 1
 
-    else:
-        raise NotImplementedError('Please choose a different encoding type')
+        encoded_data = []
+        if encode_type == 'random':
+            for i in bits:
+                tmp_data = self.__random_sound()
+                if i == 0:
+                    tmp_data &= ~1
+                else:
+                    tmp_data |= 1
 
-    return encoded_data
-
-def decodeChar(data_8bit):
-    bits = []
-    for i in data_8bit:
-        bits.append( i & 1 )
-    
-    # Have to reverse bit set because of
-    # how it was converted before
-    bits = bits[::-1]
-        
-    # Convert to char
-    char = 0
-    for i in bits:
-        char = char << 1
-        if i == 0:
-            char = char & ~1
+                encoded_data.append(str(tmp_data))
         else:
-            char = char | 1
+            raise NotImplementedError('Please choose a different encoding type')
 
-    char = chr(char)
-    return char
+        return encoded_data
 
-def encode(data, params=None):
-    encoded_data = []
-    for i in data:
-        encoded_data += encodeChar(i)
+    def set_params(self, p={}):
+        return p
 
-    return encoded_data
+    @staticmethod
+    def __decode_char(data_8bit):
+        bits = []
+        for i in data_8bit:
+            bits.append(i & 1)
 
-def decode(data, params=None):
-    data = data.split(',')
-    bit_size = 8
-    decoded_data = []
+        # Have to reverse bit set because of
+        # how it was converted before
+        bits = bits[::-1]
 
-    # This division should NOT be a float division
-    # in case encoding dataset that is bigger than
-    # data size
-    for i in range(len(data)/bit_size):
-        singleChar = [int(i) for i in data[i*8:8+i*8]]
-        decoded_data.append(decodeChar(singleChar))
-    
-    return ''.join(decoded_data)
+        # Convert to char
+        char = 0
+        for i in bits:
+            char <<= 1
+            if i == 0:
+                char &= ~1
+            else:
+                char |= 1
 
-if __name__ == "__main__":
-    data_set = "Hello this is a large test of the de-stegranography system"
-    encoded = encode(data_set);
-    print(encoded)
-    print(decode(encoded))
+        char = chr(char)
+        return char
+
+    def encode(self, data, params=None):
+        encoded_data = []
+        for i in data:
+            encoded_data += self.__encode_char(i)
+
+        return encoded_data
+
+    def decode(self, data, params=None):
+        data = data.split(',')
+        bit_size = 8
+        decoded_data = []
+
+        # This division should NOT be a float division
+        # in case encoding dataset that is bigger than
+        # data size
+        for i in range(len(data) / bit_size):
+            single_char = [int(i) for i in data[i * 8:8 + i * 8]]
+            decoded_data.append(self.__decode_char(single_char))
+
+        return ''.join(decoded_data)
+
+
+#if __name__ == "__main__":
+#    data_set = "Hello this is a large test of the de-stegranography system"
+#    encoded = encode(data_set);
+#    print(encoded)
+#    print(decode(encoded))
     

@@ -1,39 +1,42 @@
-'''
+"""
 This channel writes the resultant data out to a file, or reads in from a file to receive.
 
 Useful for testing, and also out of band transfer.
-'''
-
+"""
 import sys
 
-################### Attributes ###################
 
-requiredParams = {
-    'sending': {
-        'filename': 'Name of the file to write data to.'
-               },
-    'receiving': {
-        'filename': 'Name of the file to read data from.'
-                 }
+class File():
+    requiredParams = {
+        'sending': {
+            'filename': 'Name of the file to write data to.'
+        },
+        'receiving': {
+            'filename': 'Name of the file to read data from.'
+        }
     }
 
-maxLength = sys.maxint
-# basically just "big"
+    max_length = sys.maxint
+    # basically just "big"
+    max_hourly = sys.maxint
 
-maxHourly = sys.maxint
+    params = dict()
 
-################### Functions ###################
+    def __init__(self):
+        pass
 
-def send(data, params):
-    #print("Writing data to " + params['filename'] + "...")
-    with open(params['filename'] , 'w') as f:
-        f.write(data)
-    #print("Done.")
-    return
+    def set_params(self, params):
+        for k in params.keys():
+            self.params[k] = params[k]
 
-def receive(params):
-    #print("Reading data from " + params['filename'] + "...")
-    with open(params['filename'], 'rb') as f:
-        data = f.read()
-    #print("Done.")
-    return [data]
+    def send(self, data):
+        sending_params = self.params['sending']
+        with open(sending_params['filename'], 'w') as f:
+            f.write(data)
+        return
+
+    def receive(self):
+        receiving_params = self.params['receiving']
+        with open(receiving_params['filename'], 'rb') as f:
+            data = f.read()
+        return [data]

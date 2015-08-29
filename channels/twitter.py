@@ -1,67 +1,71 @@
-#This module written by Gabriel Butterick and Bonnie Ishiguro
+# This module written by Gabriel Butterick and Bonnie Ishiguro
 
 from twython import Twython, TwythonError
 import time
 
-################### Attributes ###################
 
-description = "Posts data to Twitter as a series of 140 character Tweets."
+class Twitter():
+    description = "Posts data to Twitter as a series of 140 character Tweets."
 
-# TODO add optional params?
-requiredParams = {
-    'sending': {
-       'key':'Application key for Twitter API.',
-       'secret': 'Application secret for Twitter API.',
-       'token': 'OAuth token for Twitter API.',
-       'tsecret': 'OAuth token secret for Twitter API.',
-       'name': 'Screen name of Twitter account to post data to.'
-               },
-    'receiving': {
-       'key':'Application key for Twitter API.',
-       'secret': 'Application secret for Twitter API.',
-       'token': 'OAuth token for Twitter API.',
-       'tsecret': 'OAuth token secret for Twitter API.',
-       'name': 'Screen name of Twitter account to post data to.'
-                 }
+    # TODO add optional params?
+    requiredParams = {
+        'sending': {
+            'key': 'Application key for Twitter API.',
+            'secret': 'Application secret for Twitter API.',
+            'token': 'OAuth token for Twitter API.',
+            'tsecret': 'OAuth token secret for Twitter API.',
+            'name': 'Screen name of Twitter account to post data to.'
+        },
+        'receiving': {
+            'key': 'Application key for Twitter API.',
+            'secret': 'Application secret for Twitter API.',
+            'token': 'OAuth token for Twitter API.',
+            'tsecret': 'OAuth token secret for Twitter API.',
+            'name': 'Screen name of Twitter account to post data to.'
+        }
     }
 
-maxLength = 140
+    # Can only post 100 times per hour or 1000 times per day
+    max_length = 140
+    max_hourly = 100
 
-maxHourly = 100
-# Can only post 100 times per hour or 1000 times per day
+    params = dict()
 
-################### Functions ###################
+    def __init__(self):
+        pass
 
-def send(data, params):
-    APP_KEY = params['key']
-    APP_SECRET = params['secret']
-    OAUTH_TOKEN = params['token']
-    OAUTH_TOKEN_SECRET = params['tsecret']
-    SCREEN_NAME = params['name']
+    def set_params(self, params):
+        self.params = params
 
-    twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+    def send(self, data):
+        send_params = self.params['sending']
+        APP_KEY = send_params['key']
+        APP_SECRET = send_params['secret']
+        OAUTH_TOKEN = send_params['token']
+        OAUTH_TOKEN_SECRET = send_params['tsecret']
 
-    twitter.update_status(status=tweet)
+        twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+        twitter.update_status(status=data)
 
-    return
+        return
 
-def receive(params):
-    APP_KEY = params['key']
-    APP_SECRET = params['secret']
-    OAUTH_TOKEN = params['token']
-    OAUTH_TOKEN_SECRET = params['tsecret']
-    SCREEN_NAME = params['name']
+    def receive(self):
+        rec_params = self.params['receiving']
 
-    twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-    try:
+        APP_KEY = rec_params['key']
+        APP_SECRET = rec_params['secret']
+        OAUTH_TOKEN = rec_params['token']
+        OAUTH_TOKEN_SECRET = rec_params['tsecret']
+        SCREEN_NAME = rec_params['name']
+
+        twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+        # let's throw the exception
         user_timeline = twitter.get_user_timeline(screen_name=SCREEN_NAME)
-    except TwythonError as e:
-        print(e)
 
-    tweets = []
-    for x in user_timeline:
-        if 'text' in x:
-            tweets.append(x['text'])
+        tweets = []
+        for x in user_timeline:
+            if 'text' in x:
+                tweets.append(x['text'])
 
-    return tweets
+        return tweets
 
