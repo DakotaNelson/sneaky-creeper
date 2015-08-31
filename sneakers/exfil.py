@@ -4,50 +4,17 @@ import math
 import pkgutil
 import base94
 
-# get all of the possible channels and encoders to load and use
-
-# generate paths to the encoder and channel folders
-currentDir = os.path.dirname(os.path.abspath(__file__))
-channels = os.path.join(currentDir, 'channels')
-encoderz = os.path.join(currentDir, 'encoders')
-
-channels = pkgutil.iter_modules(path=[channels])
-encoderz = pkgutil.iter_modules(path=[encoderz])
-
-# these are all of the modules available to be loaded and used
-channelOptions = [modName for _, modName, _ in channels]
-encodingOptions = [modName for _, modName, _ in encoderz]
-
-
-class ExfilError(Exception):
-    pass
-
-
-class ExfilChannel(ExfilError):
-    def __init__(self, val):
-        self.value = val
-
-    def __str__(self):
-        return repr(self.value)
-
-
-class ExfilEncoder(ExfilError):
-    def __init__(self, val):
-        self.value = val
-
-    def __str__(self):
-        return repr(self.value)
-
+from sneakers.errors import ExfilChannel, ExfilEncoder
 
 class Exfil():
     channel = dict()
-    encoderz = list()
+    encoders = list()
 
     def __init__(self, channel_name, encoder_names):
         c_class = self.__import_module('sneakers.channels', channel_name)
         for encoder in encoder_names:
             e_class = self.__import_module('sneakers.encoders', encoder.lower())
-            self.encoderz.append({'name': encoder, 'class': e_class()})
+            self.encoders.append({'name': encoder, 'class': e_class()})
 
         self.channel = {'name': channel_name, 'class': c_class()}
 
@@ -73,7 +40,7 @@ class Exfil():
 
     def set_encoder_params(self, encoder_name, params):
         enc = None
-        for encoder in self.encoderz:
+        for encoder in self.encoders:
             if encoder['name'] == encoder_name:
                 enc = encoder['class']
                 break
@@ -94,24 +61,38 @@ class Exfil():
         return self.channel['name']
 
     def get_encoders_name(self):
-        return [x['name'] for x in self.encoderz]
+        return [x['name'] for x in self.encoders]
 
     def channel_config(self):
         return self.channel['class'].params
 
     def encoder_config(self, encoder_name):
-        for encoder in self.encoderz:
+        for encoder in self.encoders:
             if encoder['name'] == encoder_name:
                 return encoder['class'].params
 
         raise ExfilEncoder('Encoder {} not found'.format(encoder_name))
 
     @staticmethod
-    def encoders():
+    def list_encoders():
+        # find the path to the encoders folder
+        currentDir = os.path.dirname(os.path.abspath(__file__))
+        encoders = os.path.join(currentDir, 'encoders')
+        # then find all the modules
+        encoders = pkgutil.iter_modules(path=[encoders])
+        # and list them out
+        encodingOptions = [modName for _, modName, _ in encoders]
         return encodingOptions
 
     @staticmethod
-    def channels():
+    def list_channels():
+        # find the path to the channels folder
+        currentDir = os.path.dirname(os.path.abspath(__file__))
+        channels = os.path.join(currentDir, 'channels')
+        # then find all the modules
+        channels = pkgutil.iter_modules(path=[channels])
+        # and list them out
+        channelOptions = [modName for _, modName, _ in channels]
         return channelOptions
 
     def send(self, data):
@@ -124,7 +105,7 @@ class Exfil():
         # pretty sure nobody will ever need more than 640k of ram
 
         encoded = data
-        for encoder in self.encoderz:
+        for encoder in self.encoders:
             encoded = encoder['class'].encode(encoded)
 
         chan = self.channel['class']
@@ -192,7 +173,7 @@ class Exfil():
         output = []
         # segments is an array of individual messages - decode them all one at a time
         for datum in segments:
-            for encoder in reversed(self.encoderz):
+            for encoder in reversed(self.encoders):
                 # go through the encoder chain in reverse to decode the data
                 # This allows decoders to be specified in the same order on both ends, and still work.
                 datum = encoder['class'].decode(datum)
