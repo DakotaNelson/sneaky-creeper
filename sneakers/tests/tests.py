@@ -12,7 +12,7 @@ class TestTumblr(unittest.TestCase):
     toDelete = 0
 
     def setUp(self):
-        with open('config/tumblr-config.json', 'rb') as f:
+        with open('../config/tumblr-config.json', 'rb') as f:
             s = json.loads(f.read())
 
         self.params = s['tumblrText']
