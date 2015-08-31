@@ -5,9 +5,33 @@ Using social media as a tool for data exfiltration.
 
 Usage
 =====
-```
-import sneakers
+```python
+  from sneakers import Exfil
 
+  print(Exfil.list_channels())
+  print(Exfil.list_encoders())
+
+  channel = "file"
+  encoders = ["b64"]
+
+  dataz = "very secret and private message"
+
+  # think of the exfil object like a tube
+  # (or some kind of weird socket)
+  t = Exfil(channel, encoders)
+
+  t.set_channel_params({'sending': {'filename': 'test.txt'}})
+  t.set_channel_params({'receiving': {'filename': 'test.txt'}})
+
+  t.set_encoder_params('b64', {})
+  # this isn't actually necessary, just for demonstration
+
+  print(t.channel_config())
+  print(t.encoder_config('b64'))
+
+  t.send(dataz)
+
+  print(t.receive())
 ```
 
 Setup

@@ -6,17 +6,25 @@ import base94
 
 from sneakers.errors import ExfilChannel, ExfilEncoder
 
+# basically opens a data tube
 class Exfil():
+    # the channel this tube will use
     channel = dict()
+    # the list of encoders this tube will use - order matters
     encoders = list()
 
     def __init__(self, channel_name, encoder_names):
-        c_class = self.__import_module('sneakers.channels', channel_name)
-        for encoder in encoder_names:
-            e_class = self.__import_module('sneakers.encoders', encoder.lower())
-            self.encoders.append({'name': encoder, 'class': e_class()})
+        if not type(encoder_names) is list:
+            raise TypeError("Encoders must be specified as a list of string names.")
+        if not type(channel_name) is str:
+            raise TypeError("Channel name must be specified as a string.")
 
-        self.channel = {'name': channel_name, 'class': c_class()}
+        channel_class = self.__import_module('sneakers.channels', channel_name)
+        for encoder in encoder_names:
+            encoder_class = self.__import_module('sneakers.encoders', encoder.lower())
+            self.encoders.append({'name': encoder, 'class': encoder_class()})
+
+        self.channel = {'name': channel_name, 'class': channel_class()}
 
     @staticmethod
     def __import_module(where, what):
@@ -60,7 +68,7 @@ class Exfil():
     def get_channel_name(self):
         return self.channel['name']
 
-    def get_encoders_name(self):
+    def get_encoder_names(self):
         return [x['name'] for x in self.encoders]
 
     def channel_config(self):
@@ -115,6 +123,7 @@ class Exfil():
 
         # determine the number of packets we'll need to send
         num_packets = int(math.ceil(len(encoded) / float(actual_length)))
+        # '~~~' is the largest three digit number in base94
         max_packets = base94.decode("~~~")
         if num_packets > max_packets:
             raise ValueError("you can only send " + max_packets + " packets at a time")
@@ -127,7 +136,7 @@ class Exfil():
             if len(packet) > chan.max_length:
                 raise ValueError(self.channel['name'] + " cannot send more than " + chan.max_length + " characters")
 
-            # send some stuff
+            # send it off
             chan.send(packet)
 
     def receive(self):
@@ -162,10 +171,10 @@ class Exfil():
                 buf = []
 
         if len(buf) != 0:
-            raise AssertionError("buffer is not empty: packet must be missing")
+            raise AssertionError("Buffer is not empty: packet must be missing.")
 
         if not isinstance(segments, list):
-            raise TypeError('Data must be returned from channel receive metd as an array.')
+            raise TypeError('Data must be returned from channel receive function as an array.')
             # the array is of individual 'packets' - i.e. metadata-wrapped bits of data
             # this allows for timestamping messages, sending large messages as multiple
             # fragments, etc.
