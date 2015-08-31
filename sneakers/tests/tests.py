@@ -2,9 +2,13 @@ import unittest
 import json
 import random
 import string
+import os
 
 import pytumblr
 from sneakers.channels import tumblrText
+
+import sneakers
+basePath = os.path.dirname(os.path.abspath(sneakers.__file__))
 
 class TestTumblr(unittest.TestCase):
 
@@ -12,7 +16,8 @@ class TestTumblr(unittest.TestCase):
     toDelete = 0
 
     def setUp(self):
-        with open('../config/tumblr-config.json', 'rb') as f:
+        configPath = os.path.join(basePath, 'config', 'tumblr-config.json')
+        with open(configPath, 'rb') as f:
             s = json.loads(f.read())
 
         self.params = s['tumblrText']
