@@ -1,8 +1,13 @@
+from sneakers.modules import Encoder
+
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA as cryptoRSA
 
+class Rsa(Encoder):
+    description = """\
+        Encrypts data using RSA.
+    """
 
-class Rsa():
     requiredParams = {
         'encode': {
             'publicKey': 'The filename of the public key, ' +
@@ -13,14 +18,6 @@ class Rsa():
                           'matched to the public key used for decryption.'
         }
     }
-
-    params = dict()
-
-    def __init__(self):
-        pass
-
-    def set_params(self, params):
-        self.params = params
 
     def encode(self, data):
         encode_params = self.params['encode']

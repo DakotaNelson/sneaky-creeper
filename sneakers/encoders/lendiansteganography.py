@@ -1,17 +1,15 @@
 # Lendian stegonography system
 # As of right now this can only encode the data
 # into randomly generated integers.
+from sneakers.modules import Encoder
+
 import random
 
+class Lendiansteganography(Encoder):
 
-class Lendiansteganography():
-    requiredParams = {
-        'encode': {},
-        'decode': {}
-    }
-
-    def __init__(self):
-        pass
+    description = """\
+        Encodes data into the least significant two bits of randomly generated signed integers.
+    """
 
     @staticmethod
     def __random_sound():
@@ -67,14 +65,14 @@ class Lendiansteganography():
         char = chr(char)
         return char
 
-    def encode(self, data, params=None):
+    def encode(self, data):
         encoded_data = []
         for i in data:
             encoded_data += self.__encode_char(i)
 
         return encoded_data
 
-    def decode(self, data, params=None):
+    def decode(self, data):
         data = data.split(',')
         bit_size = 8
         decoded_data = []
@@ -87,11 +85,3 @@ class Lendiansteganography():
             decoded_data.append(self.__decode_char(single_char))
 
         return ''.join(decoded_data)
-
-
-#if __name__ == "__main__":
-#    data_set = "Hello this is a large test of the de-stegranography system"
-#    encoded = encode(data_set);
-#    print(encoded)
-#    print(decode(encoded))
-    

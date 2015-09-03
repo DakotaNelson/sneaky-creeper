@@ -1,17 +1,13 @@
-'''
-An encoder that does no encoding. Ironic, but also useful for testing channels.
-Or not encoding/decoding.
-'''
+from sneakers.modules import Encoder
 
-requiredParams = {
-    'encode': {},
-    'decode': {}
-}
+class Identity(Encoder):
+    description = """\
+        An encoder that does no encoding. Ironic, but also useful for testing channels.
+        Or not encoding/decoding.
+    """
 
+    def encode(self, data):
+        return data
 
-def encode(data, params=None):
-    return data
-
-
-def decode(data, params=None):
-    return data
+    def decode(self, data):
+        return data
