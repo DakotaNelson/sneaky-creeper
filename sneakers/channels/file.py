@@ -1,12 +1,11 @@
-"""
-This channel writes the resultant data out to a file, or reads in from a file to receive.
+from sneakers.modules import Channel
 
-Useful for testing, and also out of band transfer.
-"""
-import sys
+class File(Channel):
 
+    description = """\
+        Reads or writes data to or from a file with the specified name. Useful for testing and out of band transfer.
+    """
 
-class File():
     requiredParams = {
         'sending': {
             'filename': 'Name of the file to write data to.'
@@ -16,27 +15,18 @@ class File():
         }
     }
 
-    max_length = sys.maxint
-    # basically just "big"
-    max_hourly = sys.maxint
-
-    params = dict()
-
-    def __init__(self):
-        pass
-
-    def set_params(self, params):
-        for k in params.keys():
-            self.params[k] = params[k]
+    maxLength = 10000000
+    # 10 MB
+    maxHourly = 10000
 
     def send(self, data):
-        sending_params = self.params['sending']
-        with open(sending_params['filename'], 'w') as f:
+        params = self.params['sending']
+        with open(params['filename'], 'wa') as f:
             f.write(data)
         return
 
     def receive(self):
-        receiving_params = self.params['receiving']
-        with open(receiving_params['filename'], 'rb') as f:
+        params = self.params['receiving']
+        with open(params['filename'], 'rb') as f:
             data = f.read()
         return [data]

@@ -1,22 +1,16 @@
+from sneakers.modules import Encoder
+
 import base64
 
+class B64(Encoder):
+    description = """\
+        Encodes data using base64.
+    """
 
-class B64():
-    requiredParams = {
-        'encode': {},
-        'decode': {}
-    }
-
-    params = dict()
-
-    def __init__(self):
-        pass
-
-    def set_params(self, params):
-        self.params = params
-
-    def encode(self, data, params={}):
+    def encode(self, data):
+        params = self.params['encode']
         return base64.b64encode(data)
 
-    def decode(self, data, params={}):
+    def decode(self, data):
+        params = self.params['decode']
         return base64.urlsafe_b64decode(str(data))

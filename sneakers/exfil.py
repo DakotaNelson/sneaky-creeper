@@ -8,12 +8,12 @@ from sneakers.errors import ExfilChannel, ExfilEncoder
 
 # basically opens a data tube
 class Exfil():
-    # the channel this tube will use
-    channel = dict()
-    # the list of encoders this tube will use - order matters
-    encoders = list()
-
     def __init__(self, channel_name, encoder_names):
+        # the channel this tube will use
+        self.channel = dict()
+        # the list of encoders this tube will use - order matters
+        self.encoders = list()
+
         if not type(encoder_names) is list:
             raise TypeError("Encoders must be specified as a list of string names.")
         if not type(channel_name) is str:
@@ -119,7 +119,7 @@ class Exfil():
         chan = self.channel['class']
 
         header_length = 8  # reserve characters for the headers
-        actual_length = chan.max_length - header_length
+        actual_length = chan.maxLength - header_length
 
         # determine the number of packets we'll need to send
         num_packets = int(math.ceil(len(encoded) / float(actual_length)))
@@ -133,8 +133,8 @@ class Exfil():
             packet = base94.encode(i) + " " + base94.encode(num_packets) + " " + encoded[i * actual_length:(i+1)*actual_length]
 
             # double check that nothing went wrong
-            if len(packet) > chan.max_length:
-                raise ValueError(self.channel['name'] + " cannot send more than " + chan.max_length + " characters")
+            if len(packet) > chan.maxLength:
+                raise ValueError(self.channel['name'] + " cannot send more than " + chan.maxLength + " characters")
 
             # send it off
             chan.send(packet)
