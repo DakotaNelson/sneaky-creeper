@@ -1,13 +1,15 @@
 # This module written by Gabriel Butterick and Bonnie Ishiguro
 
+from sneakers.modules import Channel
+
 from twython import Twython, TwythonError
 import time
 
+class Twitter(Channel):
+    description = """\
+        Posts data to Twitter as a series of 140 character Tweets.
+    """
 
-class Twitter():
-    description = "Posts data to Twitter as a series of 140 character Tweets."
-
-    # TODO add optional params?
     requiredParams = {
         'sending': {
             'key': 'Application key for Twitter API.',
@@ -28,14 +30,6 @@ class Twitter():
     # Can only post 100 times per hour or 1000 times per day
     max_length = 140
     max_hourly = 100
-
-    params = dict()
-
-    def __init__(self):
-        pass
-
-    def set_params(self, params):
-        self.params = params
 
     def send(self, data):
         send_params = self.params['sending']
