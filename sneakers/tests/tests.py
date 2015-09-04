@@ -34,6 +34,12 @@ class TestTumblr(unittest.TestCase):
         self.apiParams = {}
         self.apiParams['filter'] = 'raw'
 
+        from sneakers.channels.tumblrText import Tumblrtext
+
+        self.chan = Tumblrtext()
+        self.chan.params['sending'] = self.params
+        self.chan.params['receiving'] = self.params
+
     def tearDown(self):
         resp = self.client.posts(self.params['username'])
         for i in range(self.toDelete):
@@ -42,7 +48,7 @@ class TestTumblr(unittest.TestCase):
 
     def test_send(self):
         ''' test that the Tumblr module can send '''
-        tumblrText.send(self.randText, self.params)
+        self.chan.send(self.randText)
 
         resp = self.client.posts(self.params['username'], **self.apiParams)
         self.assertEqual(resp['posts'][0]['body'], self.randText)
@@ -58,7 +64,7 @@ class TestTumblr(unittest.TestCase):
                                 body=self.randText)
         self.toDelete += 1
 
-        posts = tumblrText.receive(self.params)
+        posts = self.chan.receive()
 
         self.assertEqual(posts[0], self.randText)
 
