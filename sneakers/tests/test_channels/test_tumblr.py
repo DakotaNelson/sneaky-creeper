@@ -4,6 +4,8 @@ import random
 import string
 import os
 
+from unittest.case import SkipTest
+
 import pytumblr
 from sneakers.channels import tumblrText
 
@@ -17,8 +19,11 @@ class TestTumblr(unittest.TestCase):
 
     def setUp(self):
         configPath = os.path.join(basePath, 'config', 'tumblr-config.json')
-        with open(configPath, 'rb') as f:
-            s = json.loads(f.read())
+        try:
+            with open(configPath, 'rb') as f:
+                s = json.loads(f.read())
+        except:
+            raise SkipTest("Could not access Tumblr configuration file.")
 
         self.params = s['tumblrText']
 
@@ -48,6 +53,7 @@ class TestTumblr(unittest.TestCase):
 
     def test_send(self):
         ''' test that the Tumblr module can send '''
+
         self.chan.send(self.randText)
 
         resp = self.client.posts(self.params['username'], **self.apiParams)
