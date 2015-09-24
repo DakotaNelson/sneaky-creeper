@@ -190,4 +190,4 @@ class Exfil():
             output.append(datum.rstrip())
 
         # write out the results
-        return ", ".join(output)
+        return output
