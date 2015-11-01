@@ -2,9 +2,15 @@ import unittest
 import json
 import random
 import string
+import os
+
+from unittest.case import SkipTest
 
 import pytumblr
-from channels import tumblrText
+from sneakers.channels import tumblrText
+
+import sneakers
+basePath = os.path.dirname(os.path.abspath(sneakers.__file__))
 
 class TestTumblr(unittest.TestCase):
 
@@ -12,8 +18,12 @@ class TestTumblr(unittest.TestCase):
     toDelete = 0
 
     def setUp(self):
-        with open('tumblr-config.json', 'rb') as f:
-            s = json.loads(f.read())
+        configPath = os.path.join(basePath, 'config', 'tumblr-config.json')
+        try:
+            with open(configPath, 'rb') as f:
+                s = json.loads(f.read())
+        except:
+            raise SkipTest("Could not access Tumblr configuration file.")
 
         self.params = s['tumblrText']
 
@@ -29,6 +39,12 @@ class TestTumblr(unittest.TestCase):
         self.apiParams = {}
         self.apiParams['filter'] = 'raw'
 
+        from sneakers.channels.tumblrText import Tumblrtext
+
+        self.chan = Tumblrtext()
+        self.chan.params['sending'] = self.params
+        self.chan.params['receiving'] = self.params
+
     def tearDown(self):
         resp = self.client.posts(self.params['username'])
         for i in range(self.toDelete):
@@ -37,7 +53,8 @@ class TestTumblr(unittest.TestCase):
 
     def test_send(self):
         ''' test that the Tumblr module can send '''
-        tumblrText.send(self.randText, self.params)
+
+        self.chan.send(self.randText)
 
         resp = self.client.posts(self.params['username'], **self.apiParams)
         self.assertEqual(resp['posts'][0]['body'], self.randText)
@@ -53,7 +70,7 @@ class TestTumblr(unittest.TestCase):
                                 body=self.randText)
         self.toDelete += 1
 
-        posts = tumblrText.receive(self.params)
+        posts = self.chan.receive()
 
         self.assertEqual(posts[0], self.randText)
 

@@ -1,68 +1,47 @@
 # sneaky-creeper
 Using social media as a tool for data exfiltration.
 
-![diagram](sneaky_creeper_diagram.png)
+![diagram](diagram.png)
 
 Usage
 =====
+```python
+  from sneakers import Exfil
 
-sneaky-creeper has two base elements: **encoders** (the left column in the diagram above, they encode/decode data) and **channels** (the part that actually does Internet things, in the dotted rectangle in the diagram above). You can chain encoders to, say, base64 encode your data, then encrypt it with RSA, but there can only be one channel in each command. `-e` specifies encoders (specify as many as you want), and `-c` specifies channels.
+  print(Exfil.list_channels())
+  print(Exfil.list_encoders())
 
-To see what channels are available:
+  channel = "file"
+  encoders = ["b64"]
 
-`./screep channels`
+  dataz = "very secret and private message"
 
-To see what encoders are available:
+  # think of the exfil object like a tube
+  # (or some kind of weird socket)
+  t = Exfil(channel, encoders)
 
-`./screep encoders`
+  t.set_channel_params({'sending': {'filename': 'test.txt'}})
+  t.set_channel_params({'receiving': {'filename': 'test.txt'}})
 
-To write some data to a file in plaintext:
+  t.set_encoder_params('b64', {})
+  # this isn't actually necessary, just for demonstration
 
-`echo "some data" | ./screep send -e identity -c file -p '{"file": {"filename": "test.txt"}}'`
+  print(t.channel_config())
+  print(t.encoder_config('b64'))
 
-See how useful that is?
+  t.send(dataz)
 
-To read the file back in:
-
-`./screep receive -e identity -c file -p '{"file": {"filename": "test.txt"}}'`
-
-To do the same, but encrypt the file's contents with RSA:
-
-`echo "some data" | ./screep send -e rsa -c file -p '{"file": {"filename": "test.txt"}, "rsa": {"publicKey": "rsakey.pem.pub"}}'  `  
-`./screep receive -e rsa -c file -p '{"file": {"filename": "test.txt"}, "rsa": {"privateKey": "rsakey.pem"}}' privateKey`
-
-To just test out the base64 encoder:
-
-`echo "some data" | ./screep echo -e b64`
-
-If you specify multiple encoders, the order is automatically reversed on decode so that you can specify them in the same order on both sides of the transmission and everything will work.
-
-Parameters
-==========
-
-Many channels and encoders require parameters to function. These parameters are submitted as JSON, keyed with the encoder or channel name. The value of these parameters is either one or several key-value pairs with the key specified by the encoder or channel.
-
-For example, the rsa encoder requires a public key filename, keyed as `publicKey` to send data, and a private key filename keyed as `privateKey` to receive it. Since the echo command both sends and receives, you can include the necessary parameters via the `-p` or `--parameters` flag followed by a JSON string (note the single quotes!) in your command as shown:
-
-`echo "super secret" | ./screep echo -e rsa -p '{"rsa": {"publicKey": "rsakey.pem.pub", "privateKey": "rsakey.pem"}}'`
-
-Alternatively, because it's a bore to enter all those parameters every time, they can be placed in a JSON file (with no need for the single quotes). In that case, simply use the filename as an argument.
-
-For example, if you have a file `config.json` which contains the JSON:
-`{"rsa": {"publicKey": "rsakey.pem.pub", "privateKey": "rsakey.pem"}}`
-
-Import the parameters from it via:
-`-p config.json` or `-p "config.json"`
-
-Leading to the much more succint command:
-`echo "super secret" | ./screep echo -e rsa -p config.json`
+  print(t.receive())
+```
 
 Setup
 =====
 
 #### Dependencies:
 
-`sudo pip install pycrypto twython soundcloud`
+`virtuelenv venv && source venv/bin/activate && pip install -r requirements.txt`
+
+There have been some odd and complicated issues with dependencies due to the way sneaky-creeper dynamically imports modules (the runtime imports tend to ignore virtualenvs). These have been solved in the past by installing modules globally using `pip install --user -r requirements.txt`, which is a pretty ugly hack. We're working on a better solution.
 
 #### API Keys:
 
@@ -87,4 +66,9 @@ Make a Tumblr account and [create an app](https://www.tumblr.com/oauth/apps). Th
 
 #####Soundcloud:
 
-Make a Soundcloud account and [register and app](https://developers.soundcloud.com/docs/api/guide). Visit your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
+Make a Soundcloud account and [register an app](https://developers.soundcloud.com/docs/api/guide). Visit your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
+
+Tests
+=====
+
+`source venv/bin/activate && nosetests` will run all the tests. As of right now, the interplay between tests and config files is a bit odd, so some tests will fail if you don't have valid credentials to some of the services used for channels. We're working on making tests a more useful part of the project.
