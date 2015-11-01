@@ -103,20 +103,12 @@ class Salesforce(Channel):
         respJson = r.json()
 
         posts = []
+        # now loop through each of the document body records returned
         for record in respJson['records']:
             url = '{}{}'.format(self.auth['instance_url'], record['Body'])
             r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
             posts.append(r.text)
 
-        '''folders = [record['Id'] for record in respJson['records']]
-
-        for folderId in folders:
-            url = '{}/services/data/v20.0/sobjects/Folder/{}'.format(self.auth['instance_url'], folderId)
-            print(url)
-            r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
-            print(r.json())'''
-
-        print(posts)
         return posts
 
     ###################################
@@ -129,7 +121,6 @@ class Salesforce(Channel):
 
         params = self.params['sending']
 
-        # first, authenticate
         # see: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_username_password_oauth_flow.htm
         params = {'grant_type':'password',
                   'client_id': params['client_id'],
@@ -161,8 +152,7 @@ class Salesforce(Channel):
 
         respJson = r.json()
 
-        #print("Response:\n\n{}\n\n".format(r.text))
-
+        # if there are no folders, make one
         if respJson['totalSize'] < 1:
             return self.createFolder()
         else:
@@ -181,7 +171,5 @@ class Salesforce(Channel):
                  }
 
         r = requests.post(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token']), "Content-Type": "application/json"}, json=folder)
-
-        #print("Response:\n\n{}\n\n".format(r.json()))
 
         return r.json()['id']
