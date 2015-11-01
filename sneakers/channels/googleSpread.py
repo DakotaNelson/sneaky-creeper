@@ -7,7 +7,7 @@ from oauth2client.client import SignedJwtAssertionCredentials
 
 from sneakers.modules import Channel
 
-class GoogleDocs(Channel):
+class GoogleSpread(Channel):
     description = """\
         Posts data to Google Spreadsheets.
     """
