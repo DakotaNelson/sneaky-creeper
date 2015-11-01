@@ -93,6 +93,30 @@ class Salesforce(Channel):
 
     def receive(self):
         params = self.params['receiving']
+        self.authenticate()
+
+        query = 'SELECT body FROM Document'
+        url = '{}/services/data/v20.0/query/?q={}'.format(self.auth['instance_url'], query)
+
+        r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
+
+        respJson = r.json()
+
+        posts = []
+        for record in respJson['records']:
+            url = '{}{}'.format(self.auth['instance_url'], record['Body'])
+            r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
+            posts.append(r.text)
+
+        '''folders = [record['Id'] for record in respJson['records']]
+
+        for folderId in folders:
+            url = '{}/services/data/v20.0/sobjects/Folder/{}'.format(self.auth['instance_url'], folderId)
+            print(url)
+            r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
+            print(r.json())'''
+
+        print(posts)
         return posts
 
     ###################################
@@ -140,7 +164,7 @@ class Salesforce(Channel):
         #print("Response:\n\n{}\n\n".format(r.text))
 
         if respJson['totalSize'] < 1:
-            return createFolder()
+            return self.createFolder()
         else:
             return respJson['records'][0]['Id']
 
