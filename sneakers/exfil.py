@@ -130,11 +130,12 @@ class Exfil():
 
         for i in range(num_packets):
             # wrap the data in headers
-            packet = base94.encode(i) + " " + base94.encode(num_packets) + " " + encoded[i * actual_length:(i+1)*actual_length]
+            packet = base94.encode(i) + " " + base94.encode(num_packets) + " " + ''.join(encoded[i * actual_length:(i+1)*actual_length])
 
+            print len(packet)
             # double check that nothing went wrong
             if len(packet) > chan.maxLength:
-                raise ValueError(self.channel['name'] + " cannot send more than " + chan.maxLength + " characters")
+                raise ValueError(self.channel['name'] + " cannot send more than " + str(chan.maxLength) + " characters")
 
             # send it off
             chan.send(packet)
