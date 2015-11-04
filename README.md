@@ -41,7 +41,7 @@ Setup
 
 `virtuelenv venv && source venv/bin/activate && pip install -r requirements.txt`
 
-There have been some odd and complicated issues with dependencies due to the way sneaky-creeper dynamically imports modules (the runtime imports tend to ignore virtualenvs). These have been solved in the past by installing modules globally using `pip install --user -r requirements.txt`, which is a pretty ugly hack. We're working on a better solution.
+There have been some odd issues with dependencies due to the way sneaky-creeper dynamically imports modules (the runtime imports tend to ignore virtualenvs). These have been solved in the past by installing modules globally using `pip install --user -r requirements.txt`, which is a pretty ugly hack. We're working on a better solution. Go ahead and try the above, and if it fails, open an issue so we can take a look.
 
 #### API Keys:
 
@@ -71,4 +71,4 @@ Make a Soundcloud account and [register an app](https://developers.soundcloud.co
 Tests
 =====
 
-`source venv/bin/activate && nosetests` will run all the tests. As of right now, the interplay between tests and config files is a bit odd, so some tests will fail if you don't have valid credentials to some of the services used for channels. We're working on making tests a more useful part of the project.
+`source venv/bin/activate && nosetests` will run all the tests. Note that this will leave random junk on some of the channels you have set up - you've been warned! Credentials for these tests should go in `sneakers/config/` - there's another readme there to help you out.
