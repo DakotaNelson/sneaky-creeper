@@ -64,10 +64,12 @@ def test_AllChannelsAdvanced():
         f.description = "Test the {} channel with the full range of printable characters.".format(channel)
         yield (f, )
 
-#def test_AllChannelsLong():
-#    """ Test all channels with long messages. """
-#    data = ''.join([random.choice(string.letters) for i in range(500000)])
+def test_AllChannelsLong():
+    """ Test all channels with long messages. """
+    data = ''.join([random.choice(string.letters) for i in range(500000)])
 
-#    for channel in sneakers.Exfil.list_channels() :
-#        yield unit_channel(channel, data)
+    for channel in sneakers.Exfil.list_channels() :
+        f = partial(unit_channel, channel, data)
+        f.description = "Test the {} channel with a very long message.".format(channel)
+        yield (f, )
 
