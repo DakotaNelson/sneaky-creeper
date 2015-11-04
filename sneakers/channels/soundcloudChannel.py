@@ -6,6 +6,9 @@ import os, re, urllib
 from sneakers.modules import Channel
 
 class Soundcloudchannel(Channel):
+    description = """\
+        Posts data to Soundcloud encoded into randomly generated WAV files.
+    """
 
     requiredParams = {
             'sending': {
@@ -46,14 +49,14 @@ class Soundcloudchannel(Channel):
         wf.writeframes(b''.join(frames))
         wf.close()
 
-        print("Done creating sound file")
+        #print("Done creating sound file")
         track = client.post('/tracks', track={
             'title': params['song_name'],
             'sharing':'public',
             'asset_data': open('output.wav','rb'),
             'tag_list':'tag1 \"hip hop\"',
             'downloadable': 'true' })
-        print("Done uploading")
+        #print("Done uploading")
 
         os.remove('output.wav')
 
