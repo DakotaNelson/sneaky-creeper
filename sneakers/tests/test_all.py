@@ -31,8 +31,11 @@ def unit_channel(channel, data):
     t.send(data)
 
     got = t.receive()
-    assert_equals(got[0], data)
-        #'Failed in \'{}\' channel with payload of "{}"'.format(channel, data))
+    if len(data) > 300:
+        assert_equals(got[0], data,
+          'Failed in assertion for the \'{}\' channel with a very large payload.'.format(channel))
+    else:
+        assert_equals(got[0], data)
 
 ######################################################
 #################### Actual Tests ####################

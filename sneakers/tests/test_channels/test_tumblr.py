@@ -18,7 +18,7 @@ class TestTumblr(unittest.TestCase):
     toDelete = 0
 
     def setUp(self):
-        configPath = os.path.join(basePath, 'config', 'tumblr-config.json')
+        configPath = os.path.join(basePath, 'config', 'tumblrText-config.json')
         try:
             with open(configPath, 'rb') as f:
                 s = json.loads(f.read())
