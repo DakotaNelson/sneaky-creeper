@@ -42,9 +42,9 @@ class GoogleSpread(Channel):
 
         WRITE_COL = 'A'
         row = 1
-        if not sheet.acell(WRITE_COL+str(row)).value:
+        if sheet.acell(WRITE_COL+str(row)).value:
             row += 1
-        cell = col + str(row)
+        cell = WRITE_COL + str(row)
 
         sheet.update_acell(cell, data)
         return
