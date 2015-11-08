@@ -1,9 +1,8 @@
 # This module written by Gabriel Butterick and Bonnie Ishiguro
 
 from sneakers.modules import Channel
+from twython import Twython
 
-from twython import Twython, TwythonError
-import time
 
 class Twitter(Channel):
     description = """\
@@ -62,4 +61,3 @@ class Twitter(Channel):
                 tweets.append(x['text'])
 
         return tweets
-
