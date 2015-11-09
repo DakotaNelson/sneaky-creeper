@@ -5,7 +5,7 @@ import string
 import os
 
 from unittest.case import SkipTest
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_in
 from functools import partial
 
 import sneakers
@@ -32,10 +32,10 @@ def unit_channel(channel, data):
 
     got = t.receive()
     if len(data) > 300:
-        assert_equals(got[0], data,
+        assert_in(data, got,
           'Failed in assertion for the \'{}\' channel with a very large payload.'.format(channel))
     else:
-        assert_equals(got[0], data)
+        assert_in(data, got)
 
 ######################################################
 #################### Actual Tests ####################
