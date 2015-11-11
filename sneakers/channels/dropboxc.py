@@ -17,7 +17,6 @@ class Dropboxc(Channel):
         'receiving': {
             'token': 'Access token.',
             'rfile': 'File to retrieve (absolute remote path).',
-            'lfile': 'Local file (absolute local path).'
         }
     }
 
@@ -55,17 +54,16 @@ class Dropboxc(Channel):
 
         dbx.files_upload(data, upload_filename)
 
+        return
+
     def receive(self):
         rec_params = self.params['receiving']
         remote_file = rec_params['rfile']
-        local_file = rec_params['rfile']
 
         dbx = dropbox.Dropbox(rec_params['token'])
         # ensure the path is remote absolute
         if not remote_file.startswith("/"):
             remote_file = "/"+remote_file
 
-        if 'lfile' in rec_params:
-            local_file = rec_params['lfile']
-
-        dbx.files_download_to_file(local_file, remote_file)
+        res = dbx.files_download(remote_file)
+        return [res[1].content]
