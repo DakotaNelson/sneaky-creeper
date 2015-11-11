@@ -9,6 +9,11 @@ Used as the base for both Channel and Encoder classes
 """
 
 class Module(object):
+
+    author = "sneaky-creeper"
+    description = "You should really change this."
+    comments = "Add some note here."
+    
     def __init__(self):
         self.params = {}
 
@@ -56,6 +61,8 @@ class Channel(Module):
 
     maxHourly = 100
     # maximum number of posts per hour
+
+    opsecSafe = False
 
     def __init__(self):
         Module.__init__(self)
