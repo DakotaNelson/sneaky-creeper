@@ -10,9 +10,12 @@ Used as the base for both Channel and Encoder classes
 
 class Module(object):
 
-    author = "sneaky-creeper"
-    description = "You should really change this."
-    comments = "Add some note here."
+    meta = {
+        'author': "sneaky-creeper",
+        'description': "You should really change this.",
+        'url': 'https://github.com/DakotaNelson/sneaky-creeper',
+        'comments': "Add some note here."
+    }
     
     def __init__(self):
         self.params = {}

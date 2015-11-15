@@ -92,6 +92,14 @@ class Exfil():
         encodingOptions = [modName for _, modName, _ in encoders]
         return encodingOptions
 
+    def channel_meta(self):
+        return self.channel['class'].meta
+
+    def encoder_meta(self, encoder_name):
+        for encoder in self.encoders:
+            if encoder['name'] == encoder_name:
+                return encoder['class'].meta
+
     @staticmethod
     def list_channels():
         # find the path to the channels folder
