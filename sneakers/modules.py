@@ -1,6 +1,7 @@
 """
 Contains classes for channels and encoders to inherit from.
 """
+from sneakers.errors import ExfilChannel, ExfilEncoder
 
 """
 Module Class
@@ -8,35 +9,20 @@ Module Class
 Used as the base for both Channel and Encoder classes
 """
 
+
 class Module(object):
 
-    meta = {
-        'author': "sneaky-creeper",
-        'description': "You should really change this.",
-        'url': 'https://github.com/DakotaNelson/sneaky-creeper',
-        'comments': "Add some note here."
-    }
-    
+    optionalParams = {}
+
     def __init__(self):
-        self.params = {}
+        self.reqParams = {}
+        self.optParams = {}
 
-    def set_params(self, params):
+    def set_opt_params(self, params):
         for k in params.keys():
-            self.params[k] = params[k]
-        self.check_params()
-
-    def check_params(self):
-        """
-            Makes sure the current parameters are valid.
-            More complex modules can override this to allow for custom
-            parameter validation.
-
-            Returns true if parameters are valid, else false.
-        """
-        for p in self.requiredParams.keys():
-            if not p in self.params:
-                return False
-        return True
+            if k not in self.optionalParams.keys():
+                raise ExfilChannel('Unrecognized optional parameter \'{}\''.format(k))
+            self.optParams[k] = params[k]
 
 """
 Channel Class
@@ -44,6 +30,7 @@ Channel Class
 To create a new channel, create a new file named yourChannelName.py
 with a class YourChannelName that inherits from this base class.
 """
+
 
 class Channel(Module):
     description = """\
@@ -59,18 +46,23 @@ class Channel(Module):
         }
     }
 
-    maxLength = 140
-    # maximum length of one post (characters)
+    # same format as requiredParams but free
+    optionalParams = {}
 
-    maxHourly = 100
+    # maximum length of characters of each transmission
+    # useful in case of media limitations (i.e. Twitter)
+    maxLength = 140
+
     # maximum number of posts per hour
+    maxHourly = 100
 
     opsecSafe = False
 
     def __init__(self):
         Module.__init__(self)
-        self.params = {'sending':{},
-                       'receiving':{}}
+        self.reqParams = {'sending': {},
+                          'receiving': {}
+                          }
 
     # TODO set up a way to pass just sending
     # or just recieving params to these functions
@@ -81,12 +73,25 @@ class Channel(Module):
     def receive(self):
         pass
 
+    def set_params(self, params):
+        for k in params.keys():
+            if 'sending' not in k and 'receiving' not in k:
+                raise ExfilChannel('Missing sending and/or receiving for channel {}'.format(self.__class__.__name__))
+            for param in self.requiredParams[k]:
+                if param not in params[k]:
+                    raise ExfilChannel(
+                        'Missing required parameter \'{}\' for channel \'{}\' ({}).'.format(param,
+                                                                                            self.__class__.__name__, k))
+                self.reqParams[k] = params[k]
+
+
 """
 Encoder Class
 
 To create a new encoder, create a new file named yourEncoderName.py
 with a class YourEncoderName that inherits from this base class.
 """
+
 
 class Encoder(Module):
     description = """\
@@ -104,8 +109,9 @@ class Encoder(Module):
 
     def __init__(self):
         Module.__init__(self)
-        self.params = {'encode':{},
-                       'decode':{}}
+        self.reqParams = {'encode': {},
+                          'decode': {}
+                          }
 
     # TODO set up params such that each function
     # only has access to encode/decode params
@@ -114,3 +120,14 @@ class Encoder(Module):
 
     def decode(self, data):
         pass
+
+    def set_params(self, params):
+        for k in params.keys():
+            if 'encode' not in k and 'decode' not in k:
+                raise ExfilEncoder('Missing encode and/or decode for decoder {}'.format(self.__class__.__name__))
+            for param in self.requiredParams[k]:
+                if param not in params[k]:
+                    raise ExfilEncoder(
+                        'Missing required parameter \'{}\' for encoder \'{}\' ({}).'.format(param,
+                                                                                            self.__class__.__name__, k))
+                self.reqParams[k] = params[k]

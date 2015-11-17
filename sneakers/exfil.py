@@ -36,15 +36,26 @@ class Exfil():
 
     def set_channel_params(self, params):
         ch = self.channel['class']
-        ch_name = self.channel['name']
-        for k in params.keys():
-            if 'sending' not in k and 'receiving' not in k:
-                raise ExfilChannel('Missing \'sending\' and/or \'receiving\' for channel \'{}\''.format(ch_name))
-            for param in ch.requiredParams[k]:
-                if param not in params[k]:
-                    raise ExfilChannel(
-                        'Missing required parameter \'{}\' for channel \'{}\' ({}).'.format(param, ch_name, k))
-                ch.set_params(params)
+        ch.set_params(params)
+
+        # set the default optional parameters
+        ch.set_opt_params(ch.optionalParams)
+
+    def set_opt_channel_params(self, params):
+        ch = self.channel['class']
+        ch.set_opt_params(params)
+
+    def set_opt_encoder_params(self, encoder_name, params):
+        enc = None
+        for encoder in self.encoders:
+            if encoder['name'] == encoder_name:
+                enc = encoder['class']
+                break
+
+        if not enc:
+            raise ExfilEncoder('Encoder {} not found.'.format(encoder_name))
+
+        enc.set_opt_params(params)
 
     def set_encoder_params(self, encoder_name, params):
         enc = None
@@ -54,16 +65,9 @@ class Exfil():
                 break
 
         if not enc:
-            raise ExfilEncoder('Encoder \'{}\' not found.'.format(encoder_name))
+            raise ExfilEncoder('Encoder {} not found.'.format(encoder_name))
 
-        for k in params.keys():
-            if 'encode' not in k and 'decode' not in k:
-                raise ExfilEncoder('Missing \'encode\' and/or \'decode\' for decoder \'{}\''.format(encoder_name))
-            for param in enc.requiredParams[k]:
-                if param not in params[k]:
-                    raise ExfilEncoder(
-                        'Missing required parameter \'{}\' for encoder \'{}\' ({}).'.format(param, encoder_name, k))
-                enc.set_params(params)
+        enc.set_params(params)
 
     def get_channel_name(self):
         return self.channel['name']
@@ -72,12 +76,12 @@ class Exfil():
         return [x['name'] for x in self.encoders]
 
     def channel_config(self):
-        return self.channel['class'].params
+        return [self.channel['class'].reqParams, self.channel['class'].optParams]
 
     def encoder_config(self, encoder_name):
         for encoder in self.encoders:
             if encoder['name'] == encoder_name:
-                return encoder['class'].params
+                return [encoder['class'].reqParams, encoder['class'].optParams]
 
         raise ExfilEncoder('Encoder {} not found'.format(encoder_name))
 
@@ -91,14 +95,6 @@ class Exfil():
         # and list them out
         encodingOptions = [modName for _, modName, _ in encoders]
         return encodingOptions
-
-    def channel_meta(self):
-        return self.channel['class'].meta
-
-    def encoder_meta(self, encoder_name):
-        for encoder in self.encoders:
-            if encoder['name'] == encoder_name:
-                return encoder['class'].meta
 
     @staticmethod
     def list_channels():
