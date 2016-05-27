@@ -20,7 +20,7 @@ class Rsa(Encoder):
     }
 
     def encode(self, data):
-        encode_params = self.params['encode']
+        encode_params = self.reqParams['encode']
         keystring = open(encode_params['publicKey']).read()
         key = cryptoRSA.importKey(keystring)
         cipher = PKCS1_OAEP.new(key)
@@ -28,7 +28,7 @@ class Rsa(Encoder):
         return ciphertext
 
     def decode(self, data):
-        decode_params = self.params['decode']
+        decode_params = self.reqParams['decode']
         keystring = open(decode_params['privateKey']).read()
         key = cryptoRSA.importKey(keystring)
         cipher = PKCS1_OAEP.new(key)

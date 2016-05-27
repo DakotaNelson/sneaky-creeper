@@ -32,7 +32,7 @@ class Twitter(Channel):
     max_hourly = 100
 
     def send(self, data):
-        send_params = self.params['sending']
+        send_params = self.reqParams['sending']
         APP_KEY = send_params['key']
         APP_SECRET = send_params['secret']
         OAUTH_TOKEN = send_params['token']
@@ -44,7 +44,7 @@ class Twitter(Channel):
         return
 
     def receive(self):
-        rec_params = self.params['receiving']
+        rec_params = self.reqParams['receiving']
 
         APP_KEY = rec_params['key']
         APP_SECRET = rec_params['secret']

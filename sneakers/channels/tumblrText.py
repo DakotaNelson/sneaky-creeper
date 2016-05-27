@@ -35,7 +35,7 @@ class Tumblrtext(Channel):
     # Can only post 250 times per day
 
     def send(self, data):
-        params = self.params['sending']
+        params = self.reqParams['sending']
         client = pytumblr.TumblrRestClient(
                         params['key'],
                         params['secret'],
@@ -49,7 +49,7 @@ class Tumblrtext(Channel):
         return
 
     def receive(self):
-        params = self.params['receiving']
+        params = self.reqParams['receiving']
         client = pytumblr.TumblrRestClient(
                         params['key'],
                         params['secret'],

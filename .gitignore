@@ -4,3 +4,4 @@
 *.swp
 venv
 sneakers/config
+.idea

@@ -28,7 +28,7 @@ class Soundcloudchannel(Channel):
     maxHourly = 120
 
     def send(self, data):
-        params = self.params['sending']
+        params = self.reqParams['sending']
         client = soundcloud.Client(
             client_id=params['ID'],
             client_secret=params['secret'],
@@ -63,7 +63,7 @@ class Soundcloudchannel(Channel):
         return
 
     def receive(self):
-        params = self.params['receiving']
+        params = self.reqParams['receiving']
         urllib.urlretrieve("http://soundcloud.com/" + params['username'] +\
                 "/" + params['song_name']+ "/download", 'file.wav')
         wf = wave.open('file.wav', 'r')

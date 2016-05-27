@@ -24,7 +24,7 @@ class Dropboxc(Channel):
     opsec_safe = False
 
     def send(self, data):
-        send_params = self.params['sending']
+        send_params = self.reqParams['sending']
         dbx = dropbox.Dropbox(send_params['token'])
         is_file = True
         buf = None
@@ -57,7 +57,7 @@ class Dropboxc(Channel):
         return
 
     def receive(self):
-        rec_params = self.params['receiving']
+        rec_params = self.reqParams['receiving']
         remote_file = rec_params['rfile']
 
         dbx = dropbox.Dropbox(rec_params['token'])

@@ -64,8 +64,9 @@ class Channel(Module):
                           'receiving': {}
                           }
 
-    # TODO set up a way to pass just sending
-    # or just recieving params to these functions
+    # TODO
+    # set up a way to pass just sending
+    # or just receiving params to these functions
     # (instead of accessing all params)
     def send(self, data):
         pass
@@ -113,7 +114,8 @@ class Encoder(Module):
                           'decode': {}
                           }
 
-    # TODO set up params such that each function
+    # TODO
+    # set up params such that each function
     # only has access to encode/decode params
     def encode(self, data):
         pass

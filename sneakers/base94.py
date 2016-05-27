@@ -1,5 +1,4 @@
 import string
-import math
 
 alphabet = string.ascii_letters + string.digits + string.punctuation
 base = len(alphabet)

@@ -19,12 +19,12 @@ class Aes(Encoder):
     """
 
     def encode(self, data):
-        params = self.params['encode']
+        params = self.reqParams['encode']
         en = scrypt.encrypt(data, params['key'].encode('ascii'), 0.1)
         return base64.b64encode(en)
 
     def decode(self, data):
-        params = self.params['decode']
+        params = self.reqParams['decode']
         de = base64.b64decode(data)
         return scrypt.decrypt(de, params['key'].encode('ascii'))
 
