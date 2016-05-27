@@ -35,6 +35,8 @@ class Exfil():
         return mod_class
 
     def set_channel_params(self, params):
+        if not isinstance(params, dict):
+            raise TypeError("Channel parameters must be specified as a dictionary.")
         ch = self.channel['class']
         ch_name = self.channel['name']
         for k in params.keys():
@@ -47,6 +49,8 @@ class Exfil():
                 ch.set_params(params)
 
     def set_encoder_params(self, encoder_name, params):
+        if not isinstance(params, dict):
+            raise TypeError("Encoder parameters must be specified as a dictionary.")
         enc = None
         for encoder in self.encoders:
             if encoder['name'] == encoder_name:
