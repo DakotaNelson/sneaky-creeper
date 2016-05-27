@@ -82,11 +82,11 @@ class Channel(Module):
     def set_params(self, params):
         for k in params.keys():
             if 'sending' not in k and 'receiving' not in k:
-                raise ExfilChannel('Missing sending and/or receiving for channel {}'.format(self.__class__.__name__))
+                raise ExfilChannel('Missing sending and/or receiving for channel {0}'.format(self.__class__.__name__))
             for param in self.requiredParams[k]:
                 if param not in params[k]:
                     raise ExfilChannel(
-                        'Missing required parameter \'{}\' for channel \'{}\' ({}).'.format(param,
+                        'Missing required parameter \'{0}\' for channel \'{1}\' ({2}).'.format(param,
                                                                                             self.__class__.__name__, k))
                 self.reqParams[k] = params[k]
 
@@ -128,10 +128,10 @@ class Encoder(Module):
     def set_params(self, params):
         for k in params.keys():
             if 'encode' not in k and 'decode' not in k:
-                raise ExfilEncoder('Missing encode and/or decode for decoder {}'.format(self.__class__.__name__))
+                raise ExfilEncoder('Missing encode and/or decode for decoder {0}'.format(self.__class__.__name__))
             for param in self.requiredParams[k]:
                 if param not in params[k]:
                     raise ExfilEncoder(
-                        'Missing required parameter \'{}\' for encoder \'{}\' ({}).'.format(param,
+                        'Missing required parameter \'{0}\' for encoder \'{1}\' ({2}).'.format(param,
                                                                                             self.__class__.__name__, k))
                 self.reqParams[k] = params[k]

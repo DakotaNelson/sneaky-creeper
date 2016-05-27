@@ -43,7 +43,7 @@ class Exfil:
                 break
 
         if not enc:
-            raise ExfilEncoder('Encoder {} not found.'.format(encoder_name))
+            raise ExfilEncoder('Encoder {0} not found.'.format(encoder_name))
 
         enc.set_opt_params(params)
 
@@ -55,7 +55,7 @@ class Exfil:
                 break
 
         if not enc:
-            raise ExfilEncoder('Encoder {} not found.'.format(encoder_name))
+            raise ExfilEncoder('Encoder {0} not found.'.format(encoder_name))
 
         enc.set_params(params)
 
@@ -73,7 +73,7 @@ class Exfil:
             if encoder['name'] == encoder_name:
                 return [encoder['class'].reqParams, encoder['class'].optParams]
 
-        raise ExfilEncoder('Encoder {} not found'.format(encoder_name))
+        raise ExfilEncoder('Encoder {0} not found'.format(encoder_name))
 
     def send(self, data):
         # header format: "lll nnn <data>"
@@ -98,7 +98,7 @@ class Exfil:
         # '~~~' is the largest three digit number in base94
         max_packets = base94.decode("~~~")
         if num_packets > max_packets:
-            raise ValueError("you can only send " + max_packets + " packets at a time")
+            raise ValueError("you can only send {0} packets at a time".format(max_packets))
 
         for i in range(num_packets):
             # wrap the data in headers
@@ -106,7 +106,7 @@ class Exfil:
 
             # double check that nothing went wrong
             if len(packet) > chan.maxLength:
-                raise ValueError(self.channel['name'] + " cannot send more than " + str(chan.maxLength) + " characters")
+                raise ValueError("{0} cannot send more than {1} characters".format(self.channel['name']), str(chan.maxLength))
 
             # send it off
             chan.send(packet)

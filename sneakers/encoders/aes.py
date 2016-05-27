@@ -9,7 +9,7 @@ class Aes(Encoder):
     info = {
         "name": "AES",
         "author": "davinerd",
-        "description": "Encrypts data using AES",
+        "description": "Encrypts data using AES and the provided encryption key. The resulting bits are then base64 encoded to allow them to be represented as text",
         "comments": []
     }
 
@@ -21,10 +21,6 @@ class Aes(Encoder):
             'key': 'string used as decryption key'
         }
     }
-
-    description = """\
-        Encrypts data using AES and the provided encryption key. The resulting bits are then base64 encoded to allow them to be represented as text.
-    """
 
     def encode(self, data):
         params = self.reqParams['encode']
