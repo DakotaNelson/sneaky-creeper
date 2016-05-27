@@ -12,13 +12,15 @@ class Exfil:
         # the list of encoders this tube will use - order matters
         self.encoders = list()
 
-        if not type(encoder_names) is list:
+        if not isinstance(encoder_names, list):
             raise TypeError("Encoders must be specified as a list of string names.")
-        if not type(channel_name) is str:
+        if not isinstance(channel_name, str) or not channel_name:
             raise TypeError("Channel name must be specified as a string.")
 
         channel_class = util.import_module('sneakers.channels', channel_name)
         for encoder in encoder_names:
+            if not encoder:
+                raise TypeError("Empty strings not allowed.")
             encoder_class = util.import_module('sneakers.encoders', encoder.lower())
             self.encoders.append({'name': encoder, 'class': encoder_class()})
 
