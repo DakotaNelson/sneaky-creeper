@@ -4,9 +4,13 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA as cryptoRSA
 
 class Rsa(Encoder):
-    description = """\
-        Encrypts data using RSA.
-    """
+
+    info = {
+        "name": "RSA",
+        "author": "davinerd",
+        "description": "Encrypts data using RSA",
+        "comments": []
+    }
 
     requiredParams = {
         'encode': {

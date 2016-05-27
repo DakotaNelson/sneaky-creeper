@@ -1,5 +1,6 @@
 #!/usr/bin/python2
 from sneakers import Exfil
+from sneakers import util
 
 mod = "file"
 
@@ -7,7 +8,11 @@ enc = ["b64"]
 
 dataz = "very secret and private message"
 
-print Exfil.list_encoders()
+encoders = util.list_encoders(verbose=True)
+for encoder in encoders:
+    print "Encoder name: {0}".format(encoder['encoder'])
+    print "Info: {0}".format(encoder['info'])
+    print "="*20
 
 t = Exfil(mod, enc)
 t.set_channel_params({'sending': {'filename': 'test.txt'}})

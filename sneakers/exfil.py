@@ -1,13 +1,11 @@
-#!/usr/bin/python2
-import os
 import math
-import pkgutil
 import base94
 
 from sneakers.errors import ExfilChannel, ExfilEncoder
+import util
 
 # basically opens a data tube
-class Exfil():
+class Exfil:
     def __init__(self, channel_name, encoder_names):
         # the channel this tube will use
         self.channel = dict()
@@ -19,20 +17,12 @@ class Exfil():
         if not type(channel_name) is str:
             raise TypeError("Channel name must be specified as a string.")
 
-        channel_class = self.__import_module('sneakers.channels', channel_name)
+        channel_class = util.import_module('sneakers.channels', channel_name)
         for encoder in encoder_names:
-            encoder_class = self.__import_module('sneakers.encoders', encoder.lower())
+            encoder_class = util.import_module('sneakers.encoders', encoder.lower())
             self.encoders.append({'name': encoder, 'class': encoder_class()})
 
         self.channel = {'name': channel_name, 'class': channel_class()}
-
-    @staticmethod
-    def __import_module(where, what):
-        path = '.'.join([where, what])
-        class_name = what.title()
-        mod = __import__(path, fromlist=[class_name])
-        mod_class = getattr(mod, class_name)
-        return mod_class
 
     def set_channel_params(self, params):
         ch = self.channel['class']
@@ -84,28 +74,6 @@ class Exfil():
                 return [encoder['class'].reqParams, encoder['class'].optParams]
 
         raise ExfilEncoder('Encoder {} not found'.format(encoder_name))
-
-    @staticmethod
-    def list_encoders():
-        # find the path to the encoders folder
-        currentDir = os.path.dirname(os.path.abspath(__file__))
-        encoders = os.path.join(currentDir, 'encoders')
-        # then find all the modules
-        encoders = pkgutil.iter_modules(path=[encoders])
-        # and list them out
-        encodingOptions = [modName for _, modName, _ in encoders]
-        return encodingOptions
-
-    @staticmethod
-    def list_channels():
-        # find the path to the channels folder
-        currentDir = os.path.dirname(os.path.abspath(__file__))
-        channels = os.path.join(currentDir, 'channels')
-        # then find all the modules
-        channels = pkgutil.iter_modules(path=[channels])
-        # and list them out
-        channelOptions = [modName for _, modName, _ in channels]
-        return channelOptions
 
     def send(self, data):
         # header format: "lll nnn <data>"

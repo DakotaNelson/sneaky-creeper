@@ -2,6 +2,13 @@ from sneakers.modules import Channel
 
 
 class File(Channel):
+    info = {
+        "name": "File IO",
+        "author": "jerkota",
+        "description": "Writes and reads data to and from files",
+        "comments": []
+    }
+
     requiredParams = {
         'sending': {
             'filename': 'Name of the file to write data to.'

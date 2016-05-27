@@ -1,14 +1,16 @@
-# This module written by Gabriel Butterick and Bonnie Ishiguro
-
 from sneakers.modules import Channel
 
 from twython import Twython, TwythonError
 import time
 
 class Twitter(Channel):
-    description = """\
-        Posts data to Twitter as a series of 140 character Tweets.
-    """
+
+    info = {
+        "name": "Twitter",
+        "author": "Gabriel Butterick & Bonnie Ishiguro",
+        "description": "Posts data to Twitter as a series of 140 character Tweets",
+        "comments": []
+    }
 
     requiredParams = {
         'sending': {

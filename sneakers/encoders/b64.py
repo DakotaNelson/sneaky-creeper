@@ -4,6 +4,14 @@ import base64
 
 
 class B64(Encoder):
+
+    info = {
+        "name": "Base64",
+        "author": "davinerd",
+        "description": "Encodes data in base64",
+        "comments": []
+    }
+
     def encode(self, data):
         # we really don't need it
         params = self.reqParams['encode']

@@ -1,5 +1,3 @@
-# Written by Dakota Nelson (@jerkota)
-
 from sneakers.modules import Channel
 
 import random
@@ -7,9 +5,12 @@ import string
 import pytumblr
 
 class Tumblrtext(Channel):
-    description = """\
-        Posts data to Tumblr as text.
-    """
+    info = {
+        "name": "Tumblr Text",
+        "author": "jerkota",
+        "description": "Posts data to Tumblr as text",
+        "comments": []
+    }
 
     requiredParams = {
         'sending': {

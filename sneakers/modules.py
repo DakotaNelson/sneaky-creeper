@@ -14,6 +14,13 @@ class Module(object):
 
     optionalParams = {}
 
+    info = {
+        "name": "Module name",
+        "author": "sneaky-creeper",
+        "description": "A description goes here",
+        "comments": ["add something", "and something else"]
+    }
+
     def __init__(self):
         self.reqParams = {}
         self.optParams = {}
@@ -24,6 +31,7 @@ class Module(object):
                 raise ExfilChannel('Unrecognized optional parameter \'{}\''.format(k))
             self.optParams[k] = params[k]
 
+
 """
 Channel Class
 
@@ -33,9 +41,6 @@ with a class YourChannelName that inherits from this base class.
 
 
 class Channel(Module):
-    description = """\
-        A description of the channel goes here.
-    """
 
     requiredParams = {
         'sending': {
@@ -95,9 +100,6 @@ with a class YourEncoderName that inherits from this base class.
 
 
 class Encoder(Module):
-    description = """\
-        A description of the encoder goes here.
-    """
 
     requiredParams = {
         'encode': {

@@ -7,9 +7,12 @@ import random
 
 class Lendiansteganography(Encoder):
 
-    description = """\
-        Encodes data into the least significant two bits of randomly generated signed integers.
-    """
+    info = {
+        "name": "Lendian Steganography",
+        "author": "davinerd",
+        "description": "Encodes data into the least significant two bits of randomly generated signed integers",
+        "comments": []
+    }
 
     @staticmethod
     def __random_sound():

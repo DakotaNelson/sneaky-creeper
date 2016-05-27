@@ -5,9 +5,12 @@ import string
 import random
 
 class Dropboxc(Channel):
-    description = """\
-        Dropbox C2 channel.
-    """
+    info = {
+        "name": "Dropbox",
+        "author": "davinerd",
+        "description": "Send and receive files through Dropbox",
+        "comments": []
+    }
 
     requiredParams = {
         'sending': {
@@ -20,7 +23,6 @@ class Dropboxc(Channel):
         }
     }
 
-    # this will be moved away from here
     opsec_safe = False
 
     def send(self, data):

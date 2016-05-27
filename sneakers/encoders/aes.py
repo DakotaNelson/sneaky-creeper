@@ -5,6 +5,14 @@ import base64
 
 # note that the class name *must* be title cased
 class Aes(Encoder):
+
+    info = {
+        "name": "AES",
+        "author": "davinerd",
+        "description": "Encrypts data using AES",
+        "comments": []
+    }
+
     requiredParams = {
         'encode': {
             'key': 'string used as encryption key'
