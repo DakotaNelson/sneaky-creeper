@@ -25,6 +25,8 @@ class Exfil:
         self.channel = {'name': channel_name, 'class': channel_class()}
 
     def set_channel_params(self, params):
+        if not isinstance(params, dict):
+            raise TypeError("Channel parameters must be specified as a dictionary.")
         ch = self.channel['class']
         ch.set_params(params)
 
@@ -32,10 +34,16 @@ class Exfil:
         ch.set_opt_params(ch.optionalParams)
 
     def set_opt_channel_params(self, params):
+        if not isinstance(params, dict):
+            raise TypeError("Channel optional parameters must be specified as a dictionary.")
+
         ch = self.channel['class']
         ch.set_opt_params(params)
 
     def set_opt_encoder_params(self, encoder_name, params):
+        if not isinstance(params, dict):
+            raise TypeError("Encoders optional parameters must be specified as a dictionary.")
+
         enc = None
         for encoder in self.encoders:
             if encoder['name'] == encoder_name:
@@ -48,6 +56,9 @@ class Exfil:
         enc.set_opt_params(params)
 
     def set_encoder_params(self, encoder_name, params):
+        if not isinstance(params, dict):
+            raise TypeError("Encoder parameters must be specified as a dictionary.")
+
         enc = None
         for encoder in self.encoders:
             if encoder['name'] == encoder_name:
