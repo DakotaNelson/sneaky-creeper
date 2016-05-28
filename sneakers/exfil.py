@@ -135,6 +135,9 @@ class Exfil:
         for msg in reversed(data):
             # strip and decode the headers
             tokenized = msg.split(" ", 2)
+            # if the data is shorter than 3, then it's not formatted properly
+            if len(tokenized) < 3:
+                continue
             packet_no = base94.decode(str(tokenized[0]))
             packet_total = base94.decode(str(tokenized[1]))
             msg = ''.join(tokenized[2:])
