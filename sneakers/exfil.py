@@ -122,7 +122,7 @@ class Exfil:
                 raise ValueError("{0} cannot send more than {1} characters".format(self.channel['name']), str(chan.maxLength))
 
             # send it off
-            chan.send(packet)
+            return chan.send(packet)
 
     def receive(self):
         data = self.channel['class'].receive()
