@@ -150,6 +150,10 @@ class Exfil():
         for msg in reversed(data):
             # strip and decode the headers
             tokenized = msg.split(" ", 2)
+            # if there aren't at least 3 tokens, the packet is not correct
+            # packet is: (packet number) (total packets in message) (msg body)
+            if len(tokenized) < 3:
+                continue
             packet_no = base94.decode(str(tokenized[0]))
             packet_total = base94.decode(str(tokenized[1]))
             msg = ''.join(tokenized[2:])
