@@ -37,35 +37,13 @@ class Exfil():
         return mod_class
 
     def set_channel_params(self, params):
-        if not isinstance(params, dict):
-            raise TypeError("Channel parameters must be specified as a dictionary.")
         ch = self.channel['class']
         ch.set_params(params)
 
-        # set the default optional parameters
-        ch.set_opt_params(ch.optionalParams)
-
-    def set_opt_channel_params(self, params):
-        ch = self.channel['class']
-        ch.set_opt_params(params)
-
-    def set_opt_encoder_params(self, encoder_name, params):
-        enc = None
-        for encoder in self.encoders:
-            if encoder['name'] == encoder_name:
-                enc = encoder['class']
-                break
-
-        if not enc:
-            raise ExfilEncoder('Encoder {} not found.'.format(encoder_name))
-
-        enc.set_opt_params(params)
-
     def set_encoder_params(self, encoder_name, params):
-        if not isinstance(params, dict):
-            raise TypeError("Encoder parameters must be specified as a dictionary.")
         enc = None
         for encoder in self.encoders:
+            # won't allow multiple encoders with same name
             if encoder['name'] == encoder_name:
                 enc = encoder['class']
                 break

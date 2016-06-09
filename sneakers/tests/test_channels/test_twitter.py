@@ -22,24 +22,29 @@ class TwitterTest(unittest.TestCase):
         except:
             raise SkipTest("Could not access Twitter configuration file.")
 
-        self.params = s['twitter']
+        self.testParams = s['twitter']
 
         self.client = twython.Twython(
-            self.params['key'],
-            self.params['secret'],
-            self.params['token'],
-            self.params['tsecret'])
+            self.testParams['key'],
+            self.testParams['secret'],
+            self.testParams['token'],
+            self.testParams['tsecret'])
 
         self.randText = ''.join([random.choice(string.letters) for i in range(10)])
 
         self.channel = twitter.Twitter()
-        self.channel.params['sending'] = self.params
-        self.channel.params['receiving'] = self.params
+
+        for e in self.channel.params['sending']:
+            if e.name in self.testParams:
+                e.value = self.testParams[e.name]
+        for e in self.channel.params['receiving']:
+            if e.name in self.testParams:
+                e.value = self.testParams[e.name]
 
     def test_send(self):
         self.channel.send(self.randText)
 
-        resp = self.client.get_user_timeline(screen_name=self.params['name'])
+        resp = self.client.get_user_timeline(screen_name=self.testParams['name'])
         if 'text' in resp[0]:
             self.assertEqual(resp[0]['text'], self.randText)
 

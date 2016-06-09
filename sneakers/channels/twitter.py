@@ -1,6 +1,6 @@
 # This module written by Gabriel Butterick and Bonnie Ishiguro
 
-from sneakers.modules import Channel
+from sneakers.modules import Channel, Parameter
 
 from twython import Twython, TwythonError
 import time
@@ -10,21 +10,21 @@ class Twitter(Channel):
         Posts data to Twitter as a series of 140 character Tweets.
     """
 
-    requiredParams = {
-        'sending': {
-            'key': 'Application key for Twitter API.',
-            'secret': 'Application secret for Twitter API.',
-            'token': 'OAuth token for Twitter API.',
-            'tsecret': 'OAuth token secret for Twitter API.',
-            'name': 'Screen name of Twitter account to post data to.'
-        },
-        'receiving': {
-            'key': 'Application key for Twitter API.',
-            'secret': 'Application secret for Twitter API.',
-            'token': 'OAuth token for Twitter API.',
-            'tsecret': 'OAuth token secret for Twitter API.',
-            'name': 'Screen name of Twitter account to post data to.'
-        }
+    params = {
+        'sending': [
+            Parameter('key', True, 'Application key for Twitter API.'),
+            Parameter('secret', True, 'Application secret for Twitter API.'),
+            Parameter('token', True, 'OAuth token for Twitter API.'),
+            Parameter('tsecret', True, 'OAuth token secret for Twitter API.'),
+            Parameter('name', True, 'Screen name of Twitter account to post data to.')
+        ],
+        'receiving': [
+            Parameter('key', True, 'Application key for Twitter API.'),
+            Parameter('secret', True, 'Application secret for Twitter API.'),
+            Parameter('token', True, 'OAuth token for Twitter API.'),
+            Parameter('tsecret', True, 'OAuth token secret for Twitter API.'),
+            Parameter('name', True, 'Screen name of Twitter account to post data to.')
+        ]
     }
 
     # Can only post 100 times per hour or 1000 times per day
@@ -32,11 +32,11 @@ class Twitter(Channel):
     max_hourly = 100
 
     def send(self, data):
-        send_params = self.params['sending']
-        APP_KEY = send_params['key']
-        APP_SECRET = send_params['secret']
-        OAUTH_TOKEN = send_params['token']
-        OAUTH_TOKEN_SECRET = send_params['tsecret']
+        APP_KEY = self.param('sending', 'key')
+        APP_SECRET = self.param('sending', 'secret')
+        OAUTH_TOKEN = self.param('sending', 'token')
+        OAUTH_TOKEN_SECRET = self.param('sending', 'tsecret')
+        SCREEN_NAME = self.param('sending', 'name')
 
         twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
         twitter.update_status(status=data)
@@ -44,13 +44,11 @@ class Twitter(Channel):
         return
 
     def receive(self):
-        rec_params = self.params['receiving']
-
-        APP_KEY = rec_params['key']
-        APP_SECRET = rec_params['secret']
-        OAUTH_TOKEN = rec_params['token']
-        OAUTH_TOKEN_SECRET = rec_params['tsecret']
-        SCREEN_NAME = rec_params['name']
+        APP_KEY = self.param('receiving', 'key')
+        APP_SECRET = self.param('receiving', 'secret')
+        OAUTH_TOKEN = self.param('receiving', 'token')
+        OAUTH_TOKEN_SECRET = self.param('receiving', 'tsecret')
+        SCREEN_NAME = self.param('receiving', 'name')
 
         twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
         # let's throw the exception
