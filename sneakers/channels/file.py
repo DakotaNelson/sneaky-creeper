@@ -8,11 +8,11 @@ class File(Channel):
 
     params = {
         'sending': [
-            Parameter('filename', True, 'Name of the file to write data to.')
+            Parameter('filename', True, 'Name of the file to write data to.'),
             Parameter('mode', False, 'Read mode for the sending file.', 'wa')
         ],
         'receiving': [
-            Parameter('filename', True, 'Name of the file to read data from.')
+            Parameter('filename', True, 'Name of the file to read data from.'),
             Parameter('mode', False, 'Read mode for the receiving file.', 'rb')
         ]
     }

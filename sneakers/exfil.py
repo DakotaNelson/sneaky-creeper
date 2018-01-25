@@ -60,12 +60,12 @@ class Exfil():
         return [x['name'] for x in self.encoders]
 
     def channel_config(self):
-        return [self.channel['class'].reqParams, self.channel['class'].optParams]
+        return self.channel['class'].params
 
     def encoder_config(self, encoder_name):
         for encoder in self.encoders:
             if encoder['name'] == encoder_name:
-                return [encoder['class'].reqParams, encoder['class'].optParams]
+                return encoder['class'].params
 
         raise ExfilEncoder('Encoder {} not found'.format(encoder_name))
 

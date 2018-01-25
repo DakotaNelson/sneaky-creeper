@@ -17,6 +17,8 @@ class Parameter(object):
         self.default = default
         self.value = None
 
+    def __str__(self):
+        return '<Parameter {} value={}, required={}>'.format(self.name, self.value, self.required)
 
 """
 Module Class
@@ -39,11 +41,12 @@ class Module(object):
 
     def param(self, paramType, name):
         # Get a parameter
-        print(self.params)
         for p in self.params[paramType]:
-            print(p)
             if p.name == name:
-                return p.value
+                if p.value:
+                    return p.value
+                else:
+                    return p.default
 
     def set_params(self, params):
         if not isinstance(params, dict):
@@ -66,9 +69,9 @@ class Module(object):
             missing = []
             for param in self.params[paramType]:
                 if param.required and param.value is None:
-                    missing.push('param.name')
+                    missing.append(param.name)
             if len(missing) > 0:
-                raise ValueError("Required parameter(s) {} not set for {}.".format(missing.join(', '), paramType))
+                raise ValueError("Required parameter(s) '{}' not set for {}.".format(', '.join(missing), paramType))
 
 """
 Channel Class
