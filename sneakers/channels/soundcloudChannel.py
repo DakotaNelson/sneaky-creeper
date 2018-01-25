@@ -1,6 +1,8 @@
 import random
 import struct
 import wave
+import sys
+print sys.path
 import soundcloud
 import os, re, urllib
 from sneakers.modules import Channel, Parameter

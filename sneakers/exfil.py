@@ -6,6 +6,32 @@ import base94
 
 from sneakers.errors import ExfilChannel, ExfilEncoder
 
+from sneakers.channels.file import File
+from sneakers.channels.soundcloudChannel import Soundcloudchannel
+from sneakers.channels.tumblrText import Tumblrtext
+from sneakers.channels.twitter import Twitter
+
+from sneakers.encoders.aes import Aes
+from sneakers.encoders.b64 import B64
+from sneakers.encoders.identity import Identity
+from sneakers.encoders.lendiansteganography import Lendiansteganography
+from sneakers.encoders.rsa import Rsa
+
+CHANNELS = {
+    'file': File,
+    'soundcloud': Soundcloudchannel,
+    'tumblr_text': Tumblrtext,
+    'twitter': Twitter
+}
+
+ENCODERS = {
+    'aes': Aes,
+    'b64': B64,
+    'identity': Identity,
+    'little-endian-stego': Lendiansteganography,
+    'rsa': Rsa
+}
+
 # basically opens a data tube
 class Exfil():
     def __init__(self, channel_name, encoder_names):
@@ -19,22 +45,14 @@ class Exfil():
         if not channel_name or not isinstance(channel_name, str):
             raise TypeError("Channel name must be specified as a string.")
 
-        channel_class = self.__import_module('sneakers.channels', channel_name)
-        for encoder in encoder_names:
-            if not encoder or not isinstance(encoder, str):
+        channel_class = CHANNELS[channel_name]
+        for encoder_name in encoder_names:
+            if not encoder_name or not isinstance(encoder_name, str):
                 raise TypeError("Encoders must be specified as a list of string names.")
-            encoder_class = self.__import_module('sneakers.encoders', encoder.lower())
-            self.encoders.append({'name': encoder, 'class': encoder_class()})
+            encoder_class = ENCODERS[encoder_name]
+            self.encoders.append({'name': encoder_name, 'class': encoder_class()})
 
         self.channel = {'name': channel_name, 'class': channel_class()}
-
-    @staticmethod
-    def __import_module(where, what):
-        path = '.'.join([where, what])
-        class_name = what.title()
-        mod = __import__(path, fromlist=[class_name])
-        mod_class = getattr(mod, class_name)
-        return mod_class
 
     def set_channel_params(self, params):
         ch = self.channel['class']
@@ -71,25 +89,11 @@ class Exfil():
 
     @staticmethod
     def list_encoders():
-        # find the path to the encoders folder
-        currentDir = os.path.dirname(os.path.abspath(__file__))
-        encoders = os.path.join(currentDir, 'encoders')
-        # then find all the modules
-        encoders = pkgutil.iter_modules(path=[encoders])
-        # and list them out
-        encodingOptions = [modName for _, modName, _ in encoders]
-        return encodingOptions
+        return ENCODERS.keys()
 
     @staticmethod
     def list_channels():
-        # find the path to the channels folder
-        currentDir = os.path.dirname(os.path.abspath(__file__))
-        channels = os.path.join(currentDir, 'channels')
-        # then find all the modules
-        channels = pkgutil.iter_modules(path=[channels])
-        # and list them out
-        channelOptions = [modName for _, modName, _ in channels]
-        return channelOptions
+        return CHANNELS.keys()
 
     def send(self, data):
         # header format: "lll nnn <data>"
