@@ -16,23 +16,6 @@ t.set_channel_params({'sending': {'filename': 'test.txt'},
                       'receiving': {'filename': 'test.txt'}})
 t.set_encoder_params(enc[0], {})
 
-    # t.set_channel_params({
-    #     "receiving": {
-    #         "key": "DLs5xBBVbtLTQQWoFL5PiGatJ",
-    #         "secret": "wJlw9JmjHfDzX5pFHjHaWSoKsj7P7FPyCuWMe8mQwXjbqvb8IV",
-    #         "token": "4112856970-5BPJkbsnaAa5O8dfn4i2HhDSdoYofiOyG4WhzT7",
-    #         "tsecret": "EcgeDFIj6tugIHT5rkeu39PSB75kZ9NwVNwFicHBKCPLO",
-    #         "name": "dnelsontest"},
-    #     "sending": {
-    #         "key": "DLs5xBBVbtLTQQWoFL5PiGatJ",
-    #         "secret": "wJlw9JmjHfDzX5pFHjHaWSoKsj7P7FPyCuWMe8mQwXjbqvb8IV",
-    #         "token": "4112856970-5BPJkbsnaAa5O8dfn4i2HhDSdoYofiOyG4WhzT7",
-    #         "tsecret": "EcgeDFIj6tugIHT5rkeu39PSB75kZ9NwVNwFicHBKCPLO",
-    #         "name": "dnelsontest"
-    #     }
-    # })
-
-
 print "Channel configuration:"
 print t.channel_config()
 print ""
