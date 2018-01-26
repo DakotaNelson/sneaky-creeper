@@ -40,9 +40,6 @@ class Lendiansteganography(Encoder):
 
         return encoded_data
 
-    def set_params(self, p={}):
-        return p
-
     @staticmethod
     def __decode_char(data_8bit):
         bits = []

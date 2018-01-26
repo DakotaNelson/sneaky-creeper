@@ -6,6 +6,7 @@ import os
 
 from unittest.case import SkipTest
 import twython
+from twython import TwythonError
 
 from sneakers.channels import twitter
 import sneakers
@@ -22,29 +23,42 @@ class TwitterTest(unittest.TestCase):
         except:
             raise SkipTest("Could not access Twitter configuration file.")
 
-        self.params = s['twitter']
+        self.testParams = s['twitter']
 
         self.client = twython.Twython(
-            self.params['key'],
-            self.params['secret'],
-            self.params['token'],
-            self.params['tsecret'])
+            self.testParams['key'],
+            self.testParams['secret'],
+            self.testParams['token'],
+            self.testParams['tsecret'])
 
         self.randText = ''.join([random.choice(string.letters) for i in range(10)])
 
         self.channel = twitter.Twitter()
-        self.channel.params['sending'] = self.params
-        self.channel.params['receiving'] = self.params
+
+        for e in self.channel.params['sending']:
+            if e.name in self.testParams:
+                e.value = self.testParams[e.name]
+        for e in self.channel.params['receiving']:
+            if e.name in self.testParams:
+                e.value = self.testParams[e.name]
 
     def test_send(self):
-        self.channel.send(self.randText)
+        try:
+            self.channel.send(self.randText)
+        except TwythonError as e:
+            # something out of our control
+            raise SkipTest("Twython error occurred: {}".format(e))
 
-        resp = self.client.get_user_timeline(screen_name=self.params['name'])
+        resp = self.client.get_user_timeline(screen_name=self.testParams['name'])
         if 'text' in resp[0]:
             self.assertEqual(resp[0]['text'], self.randText)
 
     def test_receive(self):
-        self.client.update_status(status=self.randText)
+        try:
+            self.client.update_status(status=self.randText)
+        except TwythonError as e:
+            # something out of our control
+            raise SkipTest("Twython error occurred: {}".format(e))
 
         tweets = self.channel.receive()
         self.assertEqual(tweets[0], self.randText)

@@ -20,9 +20,15 @@ class TestRsa(unittest.TestCase):
             raise SkipTest('could not access RSA keypair in config folder')
 
         self.rsa = Rsa()
-        self.rsa.params['encode']['publicKey'] = pubPath
 
-        self.rsa.params['decode']['privateKey'] = privPath
+        # set some parameters
+        for e in self.rsa.params['sending']:
+            if e.name == 'publicKey':
+                e.value = pubPath
+
+        for e in self.rsa.params['receiving']:
+            if e.name == 'privateKey':
+                e.value = privPath
 
     def test_encode(self):
         encoded = self.rsa.encode(self.randText)

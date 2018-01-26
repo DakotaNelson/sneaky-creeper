@@ -6,6 +6,34 @@ import base94
 
 from sneakers.errors import ExfilChannel, ExfilEncoder
 
+from sneakers.channels.file import File
+from sneakers.channels.soundcloudChannel import Soundcloudchannel
+from sneakers.channels.tumblrText import Tumblrtext
+from sneakers.channels.twitter import Twitter
+from sneakers.channels.salesforce import Salesforce
+
+from sneakers.encoders.aes import Aes
+from sneakers.encoders.b64 import B64
+from sneakers.encoders.identity import Identity
+from sneakers.encoders.lendiansteganography import Lendiansteganography
+from sneakers.encoders.rsa import Rsa
+
+CHANNELS = {
+    'file': File,
+    'soundcloud': Soundcloudchannel,
+    'tumblr_text': Tumblrtext,
+    'twitter': Twitter,
+    'salesforce': Salesforce
+}
+
+ENCODERS = {
+    'aes': Aes,
+    'b64': B64,
+    'identity': Identity,
+    'little-endian-stego': Lendiansteganography,
+    'rsa': Rsa
+}
+
 # basically opens a data tube
 class Exfil():
     def __init__(self, channel_name, encoder_names):
@@ -14,56 +42,36 @@ class Exfil():
         # the list of encoders this tube will use - order matters
         self.encoders = list()
 
-        if not type(encoder_names) is list:
+        if not isinstance(encoder_names, list):
             raise TypeError("Encoders must be specified as a list of string names.")
-        if not type(channel_name) is str:
+        if not channel_name or not isinstance(channel_name, str):
             raise TypeError("Channel name must be specified as a string.")
 
-        channel_class = self.__import_module('sneakers.channels', channel_name)
-        for encoder in encoder_names:
-            encoder_class = self.__import_module('sneakers.encoders', encoder.lower())
-            self.encoders.append({'name': encoder, 'class': encoder_class()})
+        channel_class = CHANNELS[channel_name]
+        for encoder_name in encoder_names:
+            if not encoder_name or not isinstance(encoder_name, str):
+                raise TypeError("Encoders must be specified as a list of string names.")
+            encoder_class = ENCODERS[encoder_name]
+            self.encoders.append({'name': encoder_name, 'class': encoder_class()})
 
         self.channel = {'name': channel_name, 'class': channel_class()}
 
-    @staticmethod
-    def __import_module(where, what):
-        path = '.'.join([where, what])
-        class_name = what.title()
-        mod = __import__(path, fromlist=[class_name])
-        mod_class = getattr(mod, class_name)
-        return mod_class
-
     def set_channel_params(self, params):
         ch = self.channel['class']
-        ch_name = self.channel['name']
-        for k in params.keys():
-            if 'sending' not in k and 'receiving' not in k:
-                raise ExfilChannel('Missing \'sending\' and/or \'receiving\' for channel \'{}\''.format(ch_name))
-            for param in ch.requiredParams[k]:
-                if param not in params[k]:
-                    raise ExfilChannel(
-                        'Missing required parameter \'{}\' for channel \'{}\' ({}).'.format(param, ch_name, k))
-                ch.set_params(params)
+        ch.set_params(params)
 
     def set_encoder_params(self, encoder_name, params):
         enc = None
         for encoder in self.encoders:
+            # won't allow multiple encoders with same name
             if encoder['name'] == encoder_name:
                 enc = encoder['class']
                 break
 
         if not enc:
-            raise ExfilEncoder('Encoder \'{}\' not found.'.format(encoder_name))
+            raise ExfilEncoder('Encoder {} not found.'.format(encoder_name))
 
-        for k in params.keys():
-            if 'encode' not in k and 'decode' not in k:
-                raise ExfilEncoder('Missing \'encode\' and/or \'decode\' for decoder \'{}\''.format(encoder_name))
-            for param in enc.requiredParams[k]:
-                if param not in params[k]:
-                    raise ExfilEncoder(
-                        'Missing required parameter \'{}\' for encoder \'{}\' ({}).'.format(param, encoder_name, k))
-                enc.set_params(params)
+        enc.set_params(params)
 
     def get_channel_name(self):
         return self.channel['name']
@@ -83,30 +91,17 @@ class Exfil():
 
     @staticmethod
     def list_encoders():
-        # find the path to the encoders folder
-        currentDir = os.path.dirname(os.path.abspath(__file__))
-        encoders = os.path.join(currentDir, 'encoders')
-        # then find all the modules
-        encoders = pkgutil.iter_modules(path=[encoders])
-        # and list them out
-        encodingOptions = [modName for _, modName, _ in encoders]
-        return encodingOptions
+        return ENCODERS.keys()
 
     @staticmethod
     def list_channels():
-        # find the path to the channels folder
-        currentDir = os.path.dirname(os.path.abspath(__file__))
-        channels = os.path.join(currentDir, 'channels')
-        # then find all the modules
-        channels = pkgutil.iter_modules(path=[channels])
-        # and list them out
-        channelOptions = [modName for _, modName, _ in channels]
-        return channelOptions
+        return CHANNELS.keys()
 
     def send(self, data):
         # header format: "lll nnn <data>"
-        # where "lll" is a 3 character base94 number representing this packet's index
-        # "nnn" is a 3 character base94 number representing the total number of packets in the fragment
+        # where "lll" is a 3 character base94 number representing this packet's
+        # index "nnn" is a 3 character base94 number representing the total
+        # number of packets in the fragment
         # 3 digits in base 94 = max of 830583 packets per fragment
         # this is 109,636,956 characters sent using Twitter,
         # or ~100ish MB assuming each character is one byte
@@ -119,6 +114,10 @@ class Exfil():
         chan = self.channel['class']
 
         header_length = 8  # reserve characters for the headers
+
+        if type(chan.maxLength) != int:
+            raise TypeError("Channel's maximum length must be an integer.")
+
         actual_length = chan.maxLength - header_length
 
         # determine the number of packets we'll need to send
@@ -130,7 +129,9 @@ class Exfil():
 
         for i in range(num_packets):
             # wrap the data in headers
-            packet = base94.encode(i) + " " + base94.encode(num_packets) + " " + ''.join(encoded[i * actual_length:(i+1)*actual_length])
+            data_start = int(i * actual_length)
+            data_end = int((i + 1) * actual_length)
+            packet = base94.encode(i) + " " + base94.encode(num_packets) + " " + ''.join(encoded[data_start:data_end])
 
             # double check that nothing went wrong
             if len(packet) > chan.maxLength:
@@ -150,6 +151,10 @@ class Exfil():
         for msg in reversed(data):
             # strip and decode the headers
             tokenized = msg.split(" ", 2)
+            # if there aren't at least 3 tokens, the packet is not correct
+            # packet is: (packet number) (total packets in message) (msg body)
+            if len(tokenized) < 3:
+                continue
             packet_no = base94.decode(str(tokenized[0]))
             packet_total = base94.decode(str(tokenized[1]))
             msg = ''.join(tokenized[2:])
