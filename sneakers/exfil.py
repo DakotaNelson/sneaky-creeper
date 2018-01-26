@@ -10,6 +10,7 @@ from sneakers.channels.file import File
 from sneakers.channels.soundcloudChannel import Soundcloudchannel
 from sneakers.channels.tumblrText import Tumblrtext
 from sneakers.channels.twitter import Twitter
+from sneakers.channels.salesforce import Salesforce
 
 from sneakers.encoders.aes import Aes
 from sneakers.encoders.b64 import B64
@@ -21,7 +22,8 @@ CHANNELS = {
     'file': File,
     'soundcloud': Soundcloudchannel,
     'tumblr_text': Tumblrtext,
-    'twitter': Twitter
+    'twitter': Twitter,
+    'salesforce': Salesforce
 }
 
 ENCODERS = {
@@ -97,8 +99,9 @@ class Exfil():
 
     def send(self, data):
         # header format: "lll nnn <data>"
-        # where "lll" is a 3 character base94 number representing this packet's index
-        # "nnn" is a 3 character base94 number representing the total number of packets in the fragment
+        # where "lll" is a 3 character base94 number representing this packet's
+        # index "nnn" is a 3 character base94 number representing the total
+        # number of packets in the fragment
         # 3 digits in base 94 = max of 830583 packets per fragment
         # this is 109,636,956 characters sent using Twitter,
         # or ~100ish MB assuming each character is one byte
@@ -111,6 +114,10 @@ class Exfil():
         chan = self.channel['class']
 
         header_length = 8  # reserve characters for the headers
+
+        if type(chan.maxLength) != int:
+            raise TypeError("Channel's maximum length must be an integer.")
+
         actual_length = chan.maxLength - header_length
 
         # determine the number of packets we'll need to send
@@ -122,7 +129,9 @@ class Exfil():
 
         for i in range(num_packets):
             # wrap the data in headers
-            packet = base94.encode(i) + " " + base94.encode(num_packets) + " " + ''.join(encoded[i * actual_length:(i+1)*actual_length])
+            data_start = int(i * actual_length)
+            data_end = int((i + 1) * actual_length)
+            packet = base94.encode(i) + " " + base94.encode(num_packets) + " " + ''.join(encoded[data_start:data_end])
 
             # double check that nothing went wrong
             if len(packet) > chan.maxLength:
