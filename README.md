@@ -5,6 +5,7 @@ Using social media as a tool for data exfiltration.
 
 Usage
 =====
+See `screep`:
 ```python
   from sneakers import Exfil
 
@@ -20,8 +21,8 @@ Usage
   # (or some kind of weird socket)
   t = Exfil(channel, encoders)
 
-  t.set_channel_params({'sending': {'filename': 'test.txt'}})
-  t.set_channel_params({'receiving': {'filename': 'test.txt'}})
+  t.set_channel_params({'sending': {'filename': 'test.txt'},
+                        'receiving': {'filename': 'test.txt'}})
 
   t.set_encoder_params('b64', {})
   # this isn't actually necessary, just for demonstration
@@ -45,7 +46,7 @@ There have been some odd issues with dependencies due to the way sneaky-creeper 
 
 #### API Keys:
 
-#####Twitter:
+##### Twitter:
 
 Instructions are here: http://twython.readthedocs.org/en/latest/usage/starting_out.html
 
@@ -60,11 +61,11 @@ Examine your access level for Consumer Key and Access Key and be sure they are s
 
 It should now mimic the access level of the Consumer Key
 
-#####Tumblr:
+##### Tumblr:
 
 Make a Tumblr account and [create an app](https://www.tumblr.com/oauth/apps). Then, visit the [API console](https://api.tumblr.com/console/calls/user/info) and note down the four strings there; these are your `key`, `secret`, `token`, and `token_secret`.
 
-#####Soundcloud:
+##### Soundcloud:
 
 Make a Soundcloud account and [register an app](https://developers.soundcloud.com/docs/api/guide). Visit your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
 
