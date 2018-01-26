@@ -6,6 +6,7 @@ import os
 
 from unittest.case import SkipTest
 import twython
+from twython import TwythonError
 
 from sneakers.channels import twitter
 import sneakers
@@ -42,14 +43,22 @@ class TwitterTest(unittest.TestCase):
                 e.value = self.testParams[e.name]
 
     def test_send(self):
-        self.channel.send(self.randText)
+        try:
+            self.channel.send(self.randText)
+        except TwythonError as e:
+            # something out of our control
+            raise SkipTest("Twython error occurred: {}".format(e))
 
         resp = self.client.get_user_timeline(screen_name=self.testParams['name'])
         if 'text' in resp[0]:
             self.assertEqual(resp[0]['text'], self.randText)
 
     def test_receive(self):
-        self.client.update_status(status=self.randText)
+        try:
+            self.client.update_status(status=self.randText)
+        except TwythonError as e:
+            # something out of our control
+            raise SkipTest("Twython error occurred: {}".format(e))
 
         tweets = self.channel.receive()
         self.assertEqual(tweets[0], self.randText)

@@ -8,6 +8,8 @@ from unittest.case import SkipTest
 from nose.tools import assert_equals, assert_in
 from functools import partial
 
+from twython import TwythonError
+
 import sneakers
 basePath = os.path.dirname(os.path.abspath(sneakers.__file__))
 
@@ -25,10 +27,14 @@ def unit_channel(channel, data):
     except:
         raise SkipTest('could not load configuration file for {}'.format(channel))
 
-    t.set_channel_params({'sending': params[channel]})
-    t.set_channel_params({'receiving': params[channel]})
+    t.set_channel_params({'sending': params[channel],
+                          'receiving': params[channel]})
 
-    t.send(data)
+    try:
+        t.send(data)
+    except TwythonError as e:
+        # something out of our control
+        raise SkipTest("Twython error occurred: {}".format(e))
 
     got = t.receive()
     if len(data) > 300:
@@ -60,7 +66,9 @@ def test_AllChannelsAdvanced():
     # issues if you post the same thing multiple times
     rand = ''.join([random.choice(string.letters) for i in range(5)])
 
-    data = ''.join([string.printable, rand])
+    our_printable = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
+    # excludes \t\r\n
+    data = ''.join([our_printable, rand])
 
     for channel in sneakers.Exfil.list_channels() :
         f = partial(unit_channel, channel, data)

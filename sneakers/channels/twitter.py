@@ -57,7 +57,7 @@ class Twitter(Channel):
         tweets = []
         for x in user_timeline:
             if 'text' in x:
-                tweets.append(x['text'])
+                tweets.append(x['text'].encode('utf-8'))
 
         return tweets
 
