@@ -2,6 +2,7 @@ language: python
 install: pip install -r requirements.txt
 script: nosetests
 before_install:
+- pip install --upgrade distribute
 - openssl aes-256-cbc -K $encrypted_d03e17222a13_key -iv $encrypted_d03e17222a13_iv
   -in secrets.tar.enc -out secrets.tar -d
 - tar xvf secrets.tar sneakers/config/
