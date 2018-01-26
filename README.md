@@ -72,6 +72,9 @@ Make a Soundcloud account and [register an app](https://developers.soundcloud.co
 ##### Salesforce:
 First, set up a [Salesforce developer edition account](https://developer.salesforce.com/signup?d=70130000000td6N). [Define a connected app](https://help.salesforce.com/articleView?id=connected_app_create.htm&type=5).Make sure it has full permissions, and don't worry about the callback URL - it won't be used. Once you've successfully defined your app, note down the `client_id` and `client_secret` tokens. Lastly, [reset your security token](https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm&language=en) and note down its value.
 
+##### Google Spreadsheets:
+Follow the instructions found at http://gspread.readthedocs.io/en/latest/oauth2.html. You can stop noce you've noted down your `client_email` and `private_key`. You then need to create a Google Sheet (in the same account you just authorized!), and note down its title, then share it (using Google's share feature) with the email account you noted down as `client_email`.
+
 Tests
 =====
 

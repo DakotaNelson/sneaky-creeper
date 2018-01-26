@@ -11,6 +11,7 @@ from sneakers.channels.soundcloudChannel import Soundcloudchannel
 from sneakers.channels.tumblrText import Tumblrtext
 from sneakers.channels.twitter import Twitter
 from sneakers.channels.salesforce import Salesforce
+from sneakers.channels.googleSpread import GoogleSpread
 
 from sneakers.encoders.aes import Aes
 from sneakers.encoders.b64 import B64
@@ -23,7 +24,8 @@ CHANNELS = {
     'soundcloud': Soundcloudchannel,
     'tumblr_text': Tumblrtext,
     'twitter': Twitter,
-    'salesforce': Salesforce
+    'salesforce': Salesforce,
+    'google_spread': GoogleSpread
 }
 
 ENCODERS = {
