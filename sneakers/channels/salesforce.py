@@ -1,6 +1,6 @@
 # Written by Dakota Nelson (@jerkota)
 
-from sneakers.modules import Channel
+from sneakers.modules import Channel, Parameter
 
 import random
 import string
@@ -13,24 +13,26 @@ class Salesforce(Channel):
         See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_sobject_insert_update_blob.htm
     """
 
-    requiredParams = {
-        'sending': {
-            'username': 'Your Salesforce username (in the form of an email).',
-            'password': 'Your Salesforce password.',
-            'client_id': 'The "Consumer Key" from the connected app definition.',
-            'client_secret': 'The "Consumer Secret" from the connected app definition.',
-            'security_token': 'Your account\'s security token. For more detail see https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm&language=en'
-                   },
-        'receiving': {
-            'username': 'Your Salesforce username (in the form of an email).',
-            'password': 'Your Salesforce password.',
-            'client_id': 'The "Consumer Key" from the connected app definition.',
-            'client_secret': 'The "Consumer Secret" from the connected app definition.',
-            'security_token': 'Your account\'s security token. For more detail see https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm&language=en'
-                     }
+    params = {
+        'sending': [
+            Parameter('username', True, 'Your Salesforce username (in the form of an email).'),
+            Parameter('password', True, 'Your Salesforce password.'),
+            Parameter('client_id', True, 'The "Consumer Key" from the connected app definition.'),
+            Parameter('client_secret', True, 'The "Consumer Secret" from the connected app definition.'),
+            Parameter('security_token', True, 'Your account\'s security token. For more detail see https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm&language=en'),
+            Parameter('folder_name', False, 'The name of the folder in Salesforce to put data in.', 'sneaky')
+                   ],
+        'receiving': [
+            Parameter('username', True, 'Your Salesforce username (in the form of an email).'),
+            Parameter('password', True, 'Your Salesforce password.'),
+            Parameter('client_id', True, 'The "Consumer Key" from the connected app definition.'),
+            Parameter('client_secret', True, 'The "Consumer Secret" from the connected app definition.'),
+            Parameter('security_token', True, 'Your account\'s security token. For more detail see https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm&language=en'),
+            Parameter('folder_name', False, 'The name of the folder in Salesforce to put data in.', 'sneaky')
+                     ]
         }
 
-    maxLength = 3.75e+7 / 2
+    maxLength = 18750000
     # yay for large Salesforce documents!
     # this is 37.5 MB / 2 bytes per character just in case
 
@@ -39,8 +41,6 @@ class Salesforce(Channel):
     # not sure if there's an actual limit, but this is it for now
 
     def send(self, data):
-        params = self.params['sending']
-
         # first, authenticate
         # see: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_username_password_oauth_flow.htm
         self.authenticate()
@@ -57,7 +57,8 @@ class Salesforce(Channel):
         # some metadata Salesforce needs
         filedata = {
                     'Name': filename,
-                    'FolderId': folderId
+                    'FolderId': folderId,
+                    'Type': 'pdf'
                    }
 
         # upload a two-part file; the first part is metadata from above,
@@ -67,7 +68,6 @@ class Salesforce(Channel):
                     ('',
                      json.dumps(filedata),
                      'application/json',
-                     {'Type': 'application/json'}
                     )
                   ),
                   ('Body',
@@ -82,17 +82,16 @@ class Salesforce(Channel):
 
         resp = requests.post(url,
                  headers = {'Authorization':
-                              'Bearer {}'.format(self.auth['access_token'])
-                           },
+                            'Bearer {}'.format(self.auth['access_token'])},
                  files = files)
 
+        resp.raise_for_status()
         if not resp.json()['success'] == True:
-            raise ValueError('Salesforce file upload error occurred')
+            raise ValueError('Salesforce file upload error occurred: {}'.format(resp.content))
 
         return
 
     def receive(self):
-        params = self.params['receiving']
         self.authenticate()
 
         query = 'SELECT body FROM Document'
@@ -119,14 +118,12 @@ class Salesforce(Channel):
         ''' Authenticates to Salesforce, puts the result in self.auth if
             successful, otherwise throws a ValueError '''
 
-        params = self.params['sending']
-
         # see: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_username_password_oauth_flow.htm
         params = {'grant_type':'password',
-                  'client_id': params['client_id'],
-                  'client_secret': params['client_secret'],
-                  'username': params['username'],
-                  'password': params['password'] + params['security_token']}
+                  'client_id': self.param('sending', 'client_id'),
+                  'client_secret': self.param('sending', 'client_secret'),
+                  'username': self.param('sending', 'username'),
+                  'password': self.param('sending', 'password') + self.param('sending', 'security_token')}
 
         r = requests.post('https://login.salesforce.com/services/oauth2/token',
                           data=params)
@@ -134,7 +131,7 @@ class Salesforce(Channel):
         js = r.json()
 
         if u'error' in js.keys():
-            raise ValueError('Salesforce authentication unsuccessful')
+            raise RuntimeError('Salesforce authentication unsuccessful: {}'.format(js))
 
         # should return:
         # [u'access_token', u'token_type', u'signature', u'issued_at',
@@ -144,7 +141,8 @@ class Salesforce(Channel):
     def getFolderId(self):
         ''' Returns the ID of a folder, and creates one if there are none. '''
 
-        query = 'SELECT Id FROM Folder'
+        folder_name = self.param('sending', 'folder_name')
+        query = "SELECT Id FROM Folder WHERE Folder.Name = '{}' LIMIT 1".format(folder_name)
 
         url = '{}/services/data/v20.0/query/?q={}'.format(self.auth['instance_url'], query)
 
@@ -163,9 +161,10 @@ class Salesforce(Channel):
 
         url = '{}/services/data/v20.0/sobjects/Folder/'.format(self.auth['instance_url'])
 
+        folder_name = self.param('sending', 'folder_name')
         folder = {
-                  "Name": "screep_folder",
-                  "DeveloperName" : "screep",
+                  "Name": folder_name,
+                  "DeveloperName": folder_name,
                   "AccessType" : "Public",
                   "Type" : "Document"
                  }

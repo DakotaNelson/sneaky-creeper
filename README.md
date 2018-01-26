@@ -69,8 +69,8 @@ Make a Tumblr account and [create an app](https://www.tumblr.com/oauth/apps). Th
 
 Make a Soundcloud account and [register an app](https://developers.soundcloud.com/docs/api/guide). Visit your [apps console](https://soundcloud.com/you/apps/) and note the strings for Client ID and for the Client Secret. These are for the `ID` and `secret`, while your username and password are for the `username` and `password`.
 
-#####Salesforce:
-First, set up a [Salesforce developer edition account](https://developer.salesforce.com/signup?d=70130000000td6N). [Define a connected app] (https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_defining_remote_access_applications.htm), and don't worry about the callback URL - it won't be used. Once you've successfully defined your app, note down the `client_id` and `client_secret` tokens. Lastly, [reset your security token](https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm&language=en) and note down its value.
+##### Salesforce:
+First, set up a [Salesforce developer edition account](https://developer.salesforce.com/signup?d=70130000000td6N). [Define a connected app](https://help.salesforce.com/articleView?id=connected_app_create.htm&type=5).Make sure it has full permissions, and don't worry about the callback URL - it won't be used. Once you've successfully defined your app, note down the `client_id` and `client_secret` tokens. Lastly, [reset your security token](https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm&language=en) and note down its value.
 
 Tests
 =====
