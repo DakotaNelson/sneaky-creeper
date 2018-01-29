@@ -16,12 +16,14 @@ class GoogleSpread(Channel):
         'sending': [
             Parameter('client_email', True, 'The client_email value obtained from the Google Developers Console.'),
             Parameter('private_key', True, 'The private_key value obtained from the Google Developers Console.'),
-            Parameter('google_sheet', True, 'The name (title) of the spreadsheet you wish to transfer data over.')
+            Parameter('google_sheet', True, 'The name (title) of the spreadsheet you wish to transfer data over.'),
+            Parameter('column', False, 'The letter (capital A, B, C...) of the spreadsheet column you wish to write data into. This can be used to create multiple streams in the same spreadsheet.', 'A')
         ],
         'receiving': [
             Parameter('client_email', True, 'The client_email value obtained from the Google Developers Console.'),
             Parameter('private_key', True, 'The private_key value obtained from the Google Developers Console.'),
-            Parameter('google_sheet', True, 'The name (title) of the spreadsheet you wish to transfer data over.')
+            Parameter('google_sheet', True, 'The name (title) of the spreadsheet you wish to transfer data over.'),
+            Parameter('column', False, 'The letter (capital A, B, C...) of the spreadsheet column you wish to write data into. This can be used to create multiple streams in the same spreadsheet.', 'A')
         ]
     }
 
@@ -37,7 +39,7 @@ class GoogleSpread(Channel):
         gc = gspread.authorize(credentials)
         sheet = gc.open(GOOGLE_SPREAD).sheet1
 
-        WRITE_COL = 'A'
+        WRITE_COL = self.param('sending', 'column')
         row = 1
         while sheet.acell(WRITE_COL+str(row)).value:
             row += 1
@@ -56,7 +58,7 @@ class GoogleSpread(Channel):
         gc = gspread.authorize(credentials)
         sheet = gc.open(GOOGLE_SPREAD).sheet1
 
-        READ_COL = 'A'
+        READ_COL = self.param('receiving', 'column')
 
         cells = []
         row = 1

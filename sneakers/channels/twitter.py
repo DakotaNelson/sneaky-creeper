@@ -7,7 +7,7 @@ import time
 
 class Twitter(Channel):
     description = """\
-        Posts data to Twitter as a series of 140 character Tweets.
+        Posts data to Twitter as a series of 280 character Tweets.
     """
 
     params = {
@@ -28,8 +28,8 @@ class Twitter(Channel):
     }
 
     # Can only post 100 times per hour or 1000 times per day
-    max_length = 140
-    max_hourly = 100
+    max_length = 280
+    max_hourly = 41
 
     def send(self, data):
         APP_KEY = self.param('sending', 'key')
@@ -51,11 +51,18 @@ class Twitter(Channel):
         SCREEN_NAME = self.param('receiving', 'name')
 
         twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-        # let's throw the exception
-        user_timeline = twitter.get_user_timeline(screen_name=SCREEN_NAME)
+
+        user_timeline = twitter.get_user_timeline(screen_name=SCREEN_NAME, count=200, trim_user=True)
+        timeline = user_timeline
+
+        # TODO pagination
+        # while len(user_timeline) == 200:
+        #     max_id = user_timeline[-1]['id'] + 1
+        #     user_timeline = twitter.get_user_timeline(screen_name=SCREEN_NAME, count=200, trim_user=True, max_id=max_id)
+        #     timeline.extend(user_timeline)
 
         tweets = []
-        for x in user_timeline:
+        for x in reversed(timeline):
             if 'text' in x:
                 tweets.append(x['text'].encode('utf-8'))
 

@@ -149,8 +149,7 @@ class Exfil():
         segments = []
         buf = []
 
-        # reverse the response so we get oldest first
-        for msg in reversed(data):
+        for msg in data:
             # strip and decode the headers
             tokenized = msg.split(" ", 2)
             # if there aren't at least 3 tokens, the packet is not correct
@@ -162,7 +161,7 @@ class Exfil():
             msg = ''.join(tokenized[2:])
 
             if len(buf) == 0 and packet_no != 0:
-                # we caught the end of a segment, drop this packet
+                # we caught the middle of a segment, drop this packet
                 continue
 
             # if the packet number isn't equal to the total packets in the segment
@@ -176,9 +175,6 @@ class Exfil():
                 segment = ''.join(buf)
                 segments.append(segment)
                 buf = []
-
-        if len(buf) != 0:
-            raise AssertionError("Buffer is not empty: packet must be missing.")
 
         if not isinstance(segments, list):
             raise TypeError('Data must be returned from channel receive function as an array.')

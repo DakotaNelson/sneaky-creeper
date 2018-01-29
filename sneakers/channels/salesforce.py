@@ -93,8 +93,9 @@ class Salesforce(Channel):
 
     def receive(self):
         self.authenticate()
+        folderId = self.getFolderId()
 
-        query = 'SELECT body FROM Document'
+        query = "SELECT Body FROM Document WHERE FolderId = '{}'".format(folderId)
         url = '{}/services/data/v20.0/query/?q={}'.format(self.auth['instance_url'], query)
 
         r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
@@ -104,9 +105,8 @@ class Salesforce(Channel):
         posts = []
         # now loop through each of the document body records returned
         for record in respJson['records']:
-            url = '{}{}'.format(self.auth['instance_url'], record['Body'])
-            r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
-            posts.append(r.text)
+            body = self.getDocumentBody(record['Body'])
+            posts.append(body)
 
         return posts
 
@@ -165,10 +165,16 @@ class Salesforce(Channel):
         folder = {
                   "Name": folder_name,
                   "DeveloperName": folder_name,
-                  "AccessType" : "Public",
+                  "AccessType" : "Hidden",
                   "Type" : "Document"
                  }
 
         r = requests.post(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token']), "Content-Type": "application/json"}, json=folder)
 
         return r.json()['id']
+
+    def getDocumentBody(self, uri):
+        url = '{}{}'.format(self.auth['instance_url'], uri)
+        r = requests.get(url, headers={"Authorization": "Bearer {}".format(self.auth['access_token'])})
+
+        return r.text
