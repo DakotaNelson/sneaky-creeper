@@ -2,7 +2,7 @@ asn1crypto==0.24.0
 certifi==2018.1.18
 cffi==1.11.5
 chardet==3.0.4
-cryptography==2.1.4
+cryptography==3.2
 enum34==1.1.6
 future==0.16.0
 gspread==0.6.2
